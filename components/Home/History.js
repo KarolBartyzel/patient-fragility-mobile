@@ -11,16 +11,16 @@ class History extends React.Component {
         this.page = 0;
         this.state = {
             data: [],
-            hasMore: true,
+            moreDataAvailable: true,
         };
 
         this.onLoadMore = debounce(async () => {
-            if (this.state.hasMore) {
+            if (this.state.moreDataAvailable) {
                 const res = await fetch(`${SERVER_URL}/examinations/${this.page++}`);
                 const newData = await res.json();
                 this.setState(({ data: prevData }) => ({
                     data: [ ...prevData, ...newData.data, ],
-                    hasMore: newData.hasMore
+                    moreDataAvailable: newData.moreDataAvailable
                 }));
             }
         }, 300);
