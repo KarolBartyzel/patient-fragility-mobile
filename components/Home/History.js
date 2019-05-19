@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, FlatList, TouchableHighlight, StyleSheet } from 'react-native';
 import { SERVER_URL, } from 'react-native-dotenv';
-import { Text, Card, } from 'react-native-paper';
+import { Text, Card, Searchbar, ActivityIndicator, } from 'react-native-paper';
 import { debounce, } from 'lodash';
 import PropTypes from 'prop-types';
 import moment from 'moment';
@@ -11,20 +11,26 @@ class History extends React.Component {
         super(props);
         this.page = 0;
         this.state = {
-            data: [],
+            data: null,
             moreDataAvailable: true,
+            searchPatientQuery: '',
         };
 
         this.onLoadMore = debounce(async () => {
             if (this.state.moreDataAvailable) {
-                const res = await fetch(`${SERVER_URL}/examinations/${this.page++}`);
+                const res = await fetch(`${SERVER_URL}/examinations/${this.page++}?search=${this.state.searchPatientQuery}`);
                 const newData = await res.json();
                 this.setState(({ data: prevData }) => ({
-                    data: [ ...prevData, ...newData.data, ],
+                    data: [ ...(prevData || []), ...newData.data, ],
                     moreDataAvailable: newData.moreDataAvailable
                 }));
             }
         }, 300);
+    }
+
+    setSearchPatientQuery = (searchPatientQuery) => {
+        this.page = 0;
+        this.setState({ searchPatientQuery, data: null, moreDataAvailable: true, }, this.onLoadMore);
     }
 
     componentDidMount() {
@@ -34,29 +40,45 @@ class History extends React.Component {
     render() {
         return (
             <Card style={{ flex: 1 }}>
-            <Card.Title titleStyle={styles.cardTitleStyle} title="Ostatnie badania" />
+            <Card.Title
+                style={styles.header}
+                title="Ostatnie badania" 
+                titleStyle={styles.cardTitle} 
+                right={() => <Searchbar
+                    style={styles.searchStyle}
+                    placeholder="Szukaj badań pacjenta..."
+                    onChangeText={this.setSearchPatientQuery}
+                    value={this.state.searchPatientQuery}
+                />}
+            />
             <Card.Content style={{ flex: 1 }}>
                 <View style={styles.listHeader}>
                     <Text style={styles.listHeaderPart}>Numer badania</Text>
-                    <Text style={styles.listHeaderPart}>numer pacjenta</Text>
+                    <Text style={styles.listHeaderPart}>Numer pacjenta</Text>
                     <Text style={styles.listHeaderPart}>Data</Text>
                 </View>
-                <FlatList
-                    style={styles.listContent}
-                    onEndReached={this.onLoadMore}
-                    keyExtractor={(item) => String(item.id)}
-                    onEndReachedThreshold={0.75}
-                    data={this.state.data}
-                    renderItem={({ item }) => (
-                        <TouchableHighlight onPress={() => { this.props.navigation.navigate('ExaminationResults', { id: item.id }); }}>
-                            <View style={styles.listEntry}>
-                                <Text style={styles.listEntryPart}>{item.id}</Text>
-                                <Text style={styles.listEntryPart}>{item.patientId}</Text>
-                                <Text style={styles.listEntryPart}>{moment(item.date).format("Do MMM YYYY")}</Text>
-                            </View>
-                        </TouchableHighlight>
-                    )}
-                />
+                {!this.state.data && (
+                    <ActivityIndicator animating={true} />
+                )}
+                {this.state.data && (
+                    <FlatList
+                        style={styles.listContent}
+                        onEndReached={this.onLoadMore}
+                        keyExtractor={(item) => String(item.id)}
+                        onEndReachedThreshold={0.75}
+                        data={this.state.data}
+                        renderItem={({ item }) => (
+                            <TouchableHighlight onPress={() => { this.props.navigation.navigate('ExaminationResults', { id: item.id }); }}>
+                                <View style={styles.listEntry}>
+                                    <Text style={styles.listEntryPart}>{item.id}</Text>
+                                    <Text style={styles.listEntryPart}>{item.patientId}</Text>
+                                    <Text style={styles.listEntryPart}>{moment(item.date).format("Do MMM YYYY")}</Text>
+                                </View>
+                            </TouchableHighlight>
+                        )}
+                        ListEmptyComponent={<Text style={styles.emptyList}>Brak badań</Text>}
+                    />
+                )}
             </Card.Content>
         </Card>
         );
@@ -80,7 +102,6 @@ const styles = StyleSheet.create({
     listContent: {
         width: '100%',
     },
-
     listEntry: {
         display: 'flex',
         flexDirection: 'row',
@@ -90,11 +111,25 @@ const styles = StyleSheet.create({
         borderWidth: 1,
     },
     listEntryPart: {
-        flex: 1,
         textAlign: 'center',
+        flex: 1,
     },
-    cardTitleStyle: {
-        textAlign: 'center'
+    header: {
+        flexDirection: 'column',
+        alignItems: 'center',
+    },
+    searchStyle: {
+        height: 30,
+        width: '90%',
+        marginBottom: 10,
+    },
+    cardTitle: {
+        textAlign: 'center',
+        flex: 1,
+        margin: 10,
+    },
+    emptyList: {
+        textAlign: 'center',
     },
 });
 
