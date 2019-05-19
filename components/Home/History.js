@@ -4,6 +4,7 @@ import { SERVER_URL, } from 'react-native-dotenv';
 import { Text, Card, } from 'react-native-paper';
 import { debounce, } from 'lodash';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 
 class History extends React.Component {
     constructor(props) {
@@ -36,9 +37,9 @@ class History extends React.Component {
             <Card.Title titleStyle={styles.cardTitleStyle} title="Ostatnie badania" />
             <Card.Content style={{ flex: 1 }}>
                 <View style={styles.listHeader}>
-                    <Text style={styles.listHeaderPart}>Id pacjenta</Text>
+                    <Text style={styles.listHeaderPart}>Numer badania</Text>
+                    <Text style={styles.listHeaderPart}>numer pacjenta</Text>
                     <Text style={styles.listHeaderPart}>Data</Text>
-                    <Text style={styles.listHeaderPart}>Stan pacjenta</Text>
                 </View>
                 <FlatList
                     style={styles.listContent}
@@ -47,11 +48,11 @@ class History extends React.Component {
                     onEndReachedThreshold={0.75}
                     data={this.state.data}
                     renderItem={({ item }) => (
-                        <TouchableHighlight onPress={() => { this.props.navigation.navigate('ExaminationDetails', { id: item.id }); }}>
+                        <TouchableHighlight onPress={() => { this.props.navigation.navigate('ExaminationResults', { id: item.id }); }}>
                             <View style={styles.listEntry}>
+                                <Text style={styles.listEntryPart}>{item.id}</Text>
                                 <Text style={styles.listEntryPart}>{item.patientId}</Text>
-                                <Text style={styles.listEntryPart}>{item.date}</Text>
-                                <Text style={styles.listEntryPart}>{item.grade}</Text>
+                                <Text style={styles.listEntryPart}>{moment(item.date).format("Do MMM YYYY")}</Text>
                             </View>
                         </TouchableHighlight>
                     )}
