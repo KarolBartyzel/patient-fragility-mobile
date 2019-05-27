@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, } from 'react-native';
-import { Text } from 'react-native-paper';
+import { Text} from 'react-native-paper';
 
 import NewExamination from './../components/NewExamination';
 
@@ -39,6 +39,7 @@ class NewExaminationScreen extends React.Component {
                             activeTest={this.state.activeTest}
                             testResults={this.state.testResults}
                             setActiveTest={(activeTest) => this.setState({ activeTest })} 
+                            navigation={this.props.navigation}
                         />
                     </>
                 )}

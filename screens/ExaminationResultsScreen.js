@@ -4,7 +4,7 @@ import { ActivityIndicator, Card, } from 'react-native-paper';
 import GestureRecognizer from 'react-native-swipe-gestures';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import { SERVER_URL, } from 'react-native-dotenv';
+import { REACT_APP_SERVER_URL, } from 'react-native-dotenv';
 
 import ExaminationResults from '../components/ExaminationResults';
 
@@ -24,7 +24,10 @@ class ExaminationResultsScreen extends React.Component {
     }
 
     componentDidMount() {
-        fetch(`${SERVER_URL}/examination/${this.examinationId}`)
+        
+        console.log(REACT_APP_SERVER_URL);
+        fetch(`${REACT_APP_SERVER_URL}/examination/${this.examinationId}`)
+        // fetch(`http://192.168.0.11:3010/examination/${this.examinationId}`)
             .then(async (res) => {
                 data = await res.json();
                 const { patientId, date, examinationsResults } = data;

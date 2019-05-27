@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, FlatList, TouchableHighlight, StyleSheet } from 'react-native';
-import { SERVER_URL, } from 'react-native-dotenv';
+import { REACT_APP_SERVER_URL, } from 'react-native-dotenv';
 import { Text, Card, Searchbar, ActivityIndicator, } from 'react-native-paper';
 import { debounce, } from 'lodash';
 import PropTypes from 'prop-types';
@@ -17,8 +17,10 @@ class History extends React.Component {
         };
 
         this.onLoadMore = debounce(async () => {
+            console.log(REACT_APP_SERVER_URL);
             if (this.state.moreDataAvailable) {
-                const res = await fetch(`${SERVER_URL}/examinations/${this.page++}?search=${this.state.searchPatientQuery}`);
+                const res = await fetch(`${REACT_APP_SERVER_URL}/examinations/${this.page++}?search=${this.state.searchPatientQuery}`);
+                // const res = await fetch(`http://192.168.0.11:3010/examinations/${this.page++}?search=${this.state.searchPatientQuery}`);
                 const newData = await res.json();
                 this.setState(({ data: prevData }) => ({
                     data: [ ...(prevData || []), ...newData.data, ],
