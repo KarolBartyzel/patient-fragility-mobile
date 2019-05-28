@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, } from 'react-native';
-import { Text} from 'react-native-paper';
+import { REACT_APP_SERVER_URL, } from 'react-native-dotenv';
 
 import NewExamination from './../components/NewExamination';
 
@@ -10,40 +10,37 @@ class NewExaminationScreen extends React.Component {
         this.state = {
             patientId: '',
             activeTest: null,
-            testResults: [],
+            tests: [],
+            testsResults: [],
         };
+    }
+    
+    componentDidMount() {
+        fetch(`${REACT_APP_SERVER_URL}/tests`)
+            .then(async (res) => {
+                const tests = await res.json();
+                this.setState({ tests });
+            });
     }
 
     render() {
         return (
             <View style={styles.container}>
-                {this.state.activeTest && (
-                    <NewExamination.Test 
-                        testId={this.state.activeTest} 
-                        testResults={this.state.testResults[this.state.activeTest]} 
-                        setTestResults={(newTestResults) => this.setState((prevState) => {
-                            const { testResults } = prevState;
-                            testResults[this.state.activeTest] = newTestResults;
-                            this.setState({ testResults });
-                        })} 
+                {!this.state.activeTest && (
+                    <NewExamination.Choose
+                        patientId={this.state.patientId}
+                        setPatientId={(patientId) => this.setState({ patientId })}
+                        tests={this.state.tests}
+                        testsResults={this.state.testsResults}
+                        setActiveTest={(activeTest) => this.setState({ activeTest })}
                     />
                 )}
-                {!this.state.activeTest && (
-                    <>
-                        <NewExamination.Patient
-                            patientId={this.state.patientId}
-                            setPatientId={(patientId) => this.setState({ patientId })}
-                        />
-                        <Text>Wybierz test</Text>
-                        <NewExamination.Tests
-                            activeTest={this.state.activeTest}
-                            testResults={this.state.testResults}
-                            setActiveTest={(activeTest) => this.setState({ activeTest })} 
-                            navigation={this.props.navigation}
-                        />
-                    </>
+                {this.state.activeTest && (
+                    <NewExamination.Test
+                        test={this.state.tests.find(test => test.id === this.state.activeTest)}
+                        // addTestResult={() => {}} TODO
+                    />
                 )}
-               
             </View>
         );
     }
@@ -56,6 +53,7 @@ NewExaminationScreen.navigationOptions = {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        paddingTop: 30,
     },
 });
 
