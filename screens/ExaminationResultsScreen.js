@@ -24,10 +24,7 @@ class ExaminationResultsScreen extends React.Component {
     }
 
     componentDidMount() {
-        
-        console.log(REACT_APP_SERVER_URL);
         fetch(`${REACT_APP_SERVER_URL}/examination/${this.examinationId}`)
-        // fetch(`http://192.168.0.11:3010/examination/${this.examinationId}`)
             .then(async (res) => {
                 data = await res.json();
                 const { patientId, date, examinationsResults } = data;

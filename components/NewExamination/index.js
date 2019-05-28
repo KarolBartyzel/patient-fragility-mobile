@@ -1,9 +1,7 @@
-import Patient from './Patient';
-import Tests from './Tests';
+import Choose from './Choose';
 import Test from './Test';
 
 export default {
-    Patient,
-    Tests,
+    Choose,
     Test,
 };

@@ -17,10 +17,8 @@ class History extends React.Component {
         };
 
         this.onLoadMore = debounce(async () => {
-            console.log(REACT_APP_SERVER_URL);
             if (this.state.moreDataAvailable) {
                 const res = await fetch(`${REACT_APP_SERVER_URL}/examinations/${this.page++}?search=${this.state.searchPatientQuery}`);
-                // const res = await fetch(`http://192.168.0.11:3010/examinations/${this.page++}?search=${this.state.searchPatientQuery}`);
                 const newData = await res.json();
                 this.setState(({ data: prevData }) => ({
                     data: [ ...(prevData || []), ...newData.data, ],
@@ -66,13 +64,13 @@ class History extends React.Component {
                     <FlatList
                         style={styles.listContent}
                         onEndReached={this.onLoadMore}
-                        keyExtractor={(item) => String(item.id)}
+                        keyExtractor={(item) => String(item._id)}
                         onEndReachedThreshold={0.75}
                         data={this.state.data}
                         renderItem={({ item }) => (
-                            <TouchableHighlight onPress={() => { this.props.navigation.navigate('ExaminationResults', { id: item.id }); }}>
+                            <TouchableHighlight onPress={() => { this.props.navigation.navigate('ExaminationResults', { id: item._id }); }}>
                                 <View style={styles.listEntry}>
-                                    <Text style={styles.listEntryPart}>{item.id}</Text>
+                                    <Text style={styles.listEntryPart}>{item._id}</Text>
                                     <Text style={styles.listEntryPart}>{item.patientId}</Text>
                                     <Text style={styles.listEntryPart}>{moment(item.date).format("Do MMM YYYY")}</Text>
                                 </View>
