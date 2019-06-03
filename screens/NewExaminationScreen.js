@@ -18,7 +18,7 @@ class NewExaminationScreen extends React.Component {
             date: null
         };
     }
-    
+
     componentDidMount() {
         fetch(`${REACT_APP_SERVER_URL}/tests`)
             .then(async (res) => {
@@ -89,9 +89,11 @@ class NewExaminationScreen extends React.Component {
     }
 }
 
-NewExaminationScreen.navigationOptions = {
-    title: 'Nowe badanie'
-};
+NewExaminationScreen.navigationOptions = ({ navigation }) => {
+    return {
+        title: 'Nowe badanie',
+    };
+}
 
 const styles = StyleSheet.create({
     container: {

@@ -1,9 +1,11 @@
 import React from 'react';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { AppLoading, Asset, Font, Icon } from 'expo';
-import AppNavigator from './navigation/AppNavigator';
 import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 import 'moment/locale/pl.js';
+
+import AppNavigator from './AppNavigator';
+import UserContext from './UserContext';
 
 const theme = {
     ...DefaultTheme,
@@ -24,6 +26,7 @@ const theme = {
 export default class App extends React.Component {
     state = {
         isLoadingComplete: false,
+        auth: null,
     };
 
     render() {
@@ -40,7 +43,9 @@ export default class App extends React.Component {
                 <View style={styles.container}>
                     {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
                     <PaperProvider theme={theme}>
-                        <AppNavigator />
+                        <UserContext.Provider value={this.state.auth}>
+                            <AppNavigator screenProps={{ setAuth: (auth) => this.setState({ auth }) }}  />
+                        </UserContext.Provider>
                     </PaperProvider>
                 </View>
             );
