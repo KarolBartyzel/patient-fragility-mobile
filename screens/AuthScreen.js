@@ -1,7 +1,6 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, AsyncStorage } from 'react-native';
 import { Button, Card, List, ActivityIndicator } from 'react-native-paper';
-import { AsyncStorage } from 'react-native';
 import { STORAGE_KEY, CLIENT_ID } from 'react-native-dotenv';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -19,8 +18,42 @@ class LoginScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isLoading: false
+            isLoading: true
         };
+    }
+
+    componentDidMount() {
+        this.tryPreviousAuthState().then((prevAuthState) => {
+            if (prevAuthState) {
+                const { user, accessToken } = prevAuthState;
+                this.props.screenProps.setAuth({ user, accessToken });
+                this.props.navigation.navigate('Home');
+            }
+            else {
+                this.setState({ isLoading: false });
+            }
+        });
+    }
+
+    async tryPreviousAuthState() {
+        const authState = JSON.parse(await AsyncStorage.getItem(STORAGE_KEY));
+        if (authState) {
+            if (new Date(authState.accessTokenExpirationDate) < new Date()) {
+                return Expo.AppAuth.refreshAsync(CONFIG, authState.refreshToken).then(async (newAuthState) => {
+                    newAuthState.user = authState.user;
+                    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newAuthState));
+                    return newAuthState;
+                })
+                .catch(() => {
+                    return authState;
+                });
+
+            }
+            else {
+                return authState;
+            }
+        }
+        return null;
     }
 
     async signInAsync() {
@@ -94,8 +127,8 @@ const styles = StyleSheet.create({
     loginScreen: {
         height: '100%',
         width: '100%',
+        justifyContent: 'center',
         marginTop: '10%',
-        justifyContent: 'center'
     },
     loginButton: {
         width: '90%',
