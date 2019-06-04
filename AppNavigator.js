@@ -1,15 +1,14 @@
 import React from 'react';
 import { createAppContainer, createSwitchNavigator, createStackNavigator } from 'react-navigation';
-import { Image } from 'react-native';
-import { NavigationRightSide } from './components/Navigation';
 
-import AuthLoadingScreen from './screens/AuthLoadingScreen';
-import LoginScreen from './screens/LoginScreen';
+import AuthScreen from './screens/AuthScreen';
 
 import HomeScreen from './screens/HomeScreen';
 import NewExaminationScreen from './screens/NewExaminationScreen';
 import ExaminationResultsScreen from './screens/ExaminationResultsScreen';
 import ExaminationScreen from './screens/ExaminationScreen';
+
+import { NavigationRightSide } from './components/Navigation';
 
 const AppStack = createStackNavigator(
     {
@@ -30,11 +29,10 @@ const AppStack = createStackNavigator(
 
 export default createAppContainer(createSwitchNavigator(
     {
-        AuthLoading: AuthLoadingScreen,
-        Auth: LoginScreen,
+        Auth: AuthScreen,
         App: AppStack,
     },
     {
-        initialRouteName: 'AuthLoading',
+        initialRouteName: 'Auth',
     }
 ));

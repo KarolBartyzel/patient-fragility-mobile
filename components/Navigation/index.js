@@ -18,7 +18,7 @@ class NavigationRightSide extends React.Component {
     closeMenu = () => this.setState({ menuOpen: false });
 
     logout = async () => {
-        this.props.navigation.navigate('AuthLoading');
+        this.props.navigation.navigate('Auth');
         Expo.Google.logOutAsync({ accessToken: this.props.accessToken, clientId: CLIENT_ID });
         this.props.signOutUser();
         await AsyncStorage.removeItem(STORAGE_KEY);
