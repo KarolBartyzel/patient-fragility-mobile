@@ -1,19 +1,19 @@
 import React from 'react';
 import { StyleSheet, View, } from 'react-native';
 
-import Home from './../components/Home';
+import NewPatient from './../components/NewPatient';
 
-export default function HomeScreen(props) {
+export default function NewPatientScreen(props) {
     return (
         <View style={styles.container}>
-            <Home {...props} />
+            <NewPatient {...props} />
         </View>
     );
 }
 
-HomeScreen.navigationOptions = ({ navigation }) => {
+NewPatientScreen.navigationOptions = ({ navigation }) => {
     return {
-        title: "Pacjenci",
+        title: "Nowy Pacjent",
     };
 }
 
