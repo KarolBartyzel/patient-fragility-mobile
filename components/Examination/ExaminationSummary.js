@@ -15,17 +15,35 @@ class ExaminationSummary extends React.Component {
     render() {
         return (
             <View style={styles.view}>
-                <View style={{flex: 6}}>
+                 <Card style={{ flex: 1 }}>
+                    <Card.Title title="Card Title" subtitle="Card Subtitle" left={(props) => <Avatar.Icon {...props} icon="folder" />} />
+                    <Card.Content>
+                        <Title>Card title</Title>
+                        <Paragraph>Card content</Paragraph>
+                    </Card.Content>
+                    <Card.Actions>
+                        <Button
+                            mode="contained"
+                            style={styles.finishButton}
+                            onPress={this.onFinish}
+                            dark={true}
+                            disabled={this.props.tests.filter(test => test.filledQuestions.length === test.questions.length) === 0 || !this.props.patientId}
+                        >
+                            Zakończ badanie
+                        </Button>
+                    </Card.Actions>
+                </Card>
+                {/* <View style={{flex: 6}}>
                     <Headline >Skala Katza (ADL)</Headline>
                     <Subheading style={{marginBottom: 15}}>Skala oceny podstawowych czynności w życiu codziennym.</Subheading>
                     <Divider/>
                     <Paragraph>Nr badania: 18</Paragraph>
                     <Paragraph>Nr pacjenta: 6</Paragraph>
                     <Paragraph>Data: 22.05.19r</Paragraph>
-                </View>
+                </View> */}
                 {/* <Card style={styles.card}> */}
                     {/* <Card.Actions style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}> */}
-                        <Button dark={true} style={styles.card} icon="arrow-forward" compact={true} mode="contained" onPress={() => props.navigation.navigate('NewExamination')}>Rozpocznij test</Button>
+                        {/* <Button dark={true} style={styles.card} icon="arrow-forward" compact={true} mode="contained" onPress={() => props.navigation.navigate('NewExamination')}>Rozpocznij test</Button> */}
                     {/* </Card.Actions>  */}
                 {/* </Card> */}
 

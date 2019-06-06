@@ -13,6 +13,9 @@ function NewPatient(props) {
             <Button contentStyle={styles.newPatientButtonContent} icon="create" mode="contained" onPress={onPress}>
                 Nowy Pacjent
             </Button>
+            <Button contentStyle={styles.newExaminationButtonContent} icon="create" mode="contained" onPress={() => props.navigation.navigate("NewExamination")}>
+                    Wykonaj badanie
+            </Button>
         </View>
     );
 }
@@ -27,6 +30,11 @@ const styles = StyleSheet.create({
     newPatientButtonContent: {
         paddingTop: 5,
         paddingBottom: 5
+    },
+    newExaminationButtonContent: {
+        paddingTop: 5,
+        paddingBottom: 5,
+        marginTop: 3
     }
 });
 
