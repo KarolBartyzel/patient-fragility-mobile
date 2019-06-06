@@ -2,10 +2,21 @@ import React from 'react';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { AppLoading, Asset, Font, Icon } from 'expo';
 import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
+import { initializeApp } from 'firebase';
 import 'moment/locale/pl.js';
+import { FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, FIREBASE_DATABASE_URL, FIREBASE_PROJECT_ID, FIREBASE_STORAGE_BUCKET, FIREBASE_MESSAGING_SENDER_ID, FIREBASE_APP_ID } from 'react-native-dotenv';
 
 import AppNavigator from './AppNavigator';
-import UserContext from './UserContext';
+
+initializeApp({
+    apiKey: FIREBASE_API_KEY,
+    authDomain: FIREBASE_AUTH_DOMAIN,
+    databaseURL: FIREBASE_DATABASE_URL,
+    projectId: FIREBASE_PROJECT_ID,
+    storageBucket: FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: FIREBASE_MESSAGING_SENDER_ID,
+    appId: FIREBASE_APP_ID
+});
 
 const theme = {
     ...DefaultTheme,
@@ -25,8 +36,7 @@ const theme = {
 
 export default class App extends React.Component {
     state = {
-        isLoadingComplete: false,
-        auth: null,
+        isLoadingComplete: false
     };
 
     render() {
@@ -43,9 +53,7 @@ export default class App extends React.Component {
                 <View style={styles.container}>
                     {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
                     <PaperProvider theme={theme}>
-                        <UserContext.Provider value={this.state.auth}>
-                            <AppNavigator screenProps={{ setAuth: (auth) => this.setState({ auth }) }}  />
-                        </UserContext.Provider>
+                            <AppNavigator />
                     </PaperProvider>
                 </View>
             );

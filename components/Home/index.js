@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { REACT_APP_SERVER_URL, } from 'react-native-dotenv';
 import { Card } from 'react-native-paper';
 import { debounce, } from 'lodash';
 import PropTypes from 'prop-types';
@@ -9,40 +8,52 @@ import NewPatient from './NewPatient';
 import PatientSearch from './PatientSearch';
 import PatientsList from './PatientsList';
 
+import { patients } from './../../firebase';
+
+const PAGE_SIZE = 10;
+
 class Home extends React.Component {
     constructor(props) {
         super(props);
-        this.page = 0;
         this.state = {
             data: null,
-            moreDataAvailable: true,
             searchPatientQuery: '',
         };
 
-        this.onLoadMore = debounce(async () => {
-            if (this.state.moreDataAvailable) {
-                const res = await fetch(`${REACT_APP_SERVER_URL}/patients/${this.page++}?search=${this.state.searchPatientQuery}`);
-                const newData = await res.json();
+        this.startAt = undefined;
+        this.onLoadMore = debounce(async (fetchingIndex) => {
+            if (this.startAt !== null) {
+                const { items, startAt } = await patients.getPatients(PAGE_SIZE, this.startAt, this.state.searchPatientQuery);
+                this.startAt = startAt;
                 this.setState(({ data: prevData }) => ({
-                    data: [ ...(prevData || []), ...newData.data, ],
-                    moreDataAvailable: newData.moreDataAvailable
+                    data: this.state.searchPatientQuery ? items : [ ...(prevData || []), ...items, ],
                 }));
             }
         }, 300);
 
         this.onNavigateBack = this.props.navigation.addListener('willFocus', () => {
-            this.page = 0;
+            this.startAt = undefined;
+
             this.setState({
                 data: null,
-                moreDataAvailable: true,
                 searchPatientQuery: '',
+                typingTimeout: 0
             }, this.onLoadMore);
         });
     }
 
     setSearchPatientQuery = (searchPatientQuery) => {
-        this.page = 0;
-        this.setState({ searchPatientQuery, data: null, moreDataAvailable: true, }, this.onLoadMore);
+        if (this.state.typingTimeout) {
+            clearTimeout(this.state.typingTimeout);
+        }
+     
+        this.setState({
+            searchPatientQuery: searchPatientQuery.trim().toLowerCase(),
+            typingTimeout: setTimeout(() => {
+                this.startAt = undefined;
+                this.setState({ data: null }, this.onLoadMore);
+            }, 300)
+        });
     }
 
     componentDidMount() {
@@ -50,7 +61,7 @@ class Home extends React.Component {
     }
 
     componentWillUnmount() {
-        this.onNavigateBack();
+        this.onNavigateBack.remove();
     }
 
     render() {
@@ -58,7 +69,7 @@ class Home extends React.Component {
             <>
             <Card style={styles.homeCard}>
                 <NewPatient navigation={this.props.navigation} />
-                <PatientSearch searchPatientQuery={this.state.searchPatientQuery} setSearchPatientQuery={(searchPatientQuery) => this.setState({ searchPatientQuery })} />
+                <PatientSearch searchPatientQuery={this.state.searchPatientQuery} setSearchPatientQuery={this.setSearchPatientQuery} />
                 <PatientsList patients={this.state.data} navigation={this.props.navigation} onLoadMore={this.onLoadMore} />
             </Card>
             </>
