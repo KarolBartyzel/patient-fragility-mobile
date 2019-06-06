@@ -3,7 +3,8 @@ import { View, StyleSheet, Platform } from 'react-native';
 import { TextInput, HelperText, Button, Card, ActivityIndicator } from 'react-native-paper';
 import PropTypes from 'prop-types';
 import { debounce } from 'lodash';
-import { REACT_APP_SERVER_URL, } from 'react-native-dotenv';
+
+import { patients } from './../../firebase';
 
 class NewPatient extends React.Component {
     constructor(props) {
@@ -18,29 +19,24 @@ class NewPatient extends React.Component {
     }
 
     validatePatientId(patientId) {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             if (!patientId) {
-                this.setState({ validationText: 'Id pacjenta jest wymagane' });
-                resolve(false);
+                this.setState({ validationText: 'Id pacjenta jest wymagane' }, () => resolve(false));
+                ;
             }
             else {
-                fetch(`${REACT_APP_SERVER_URL}/patients/exists?patientId=${patientId}`)
-                    .then(async (response) => {
-                        const patientIdExists = (await response.json());
-                        if (patientIdExists) {
-                            this.setState({ validationText: 'Pacjent z podanym id już istnieje' });
-                            resolve(false);
-                        }
-                        else {
-                            resolve(true);
-                        }
-                    });
+                if (await patients.checkIfPatientExists(patientId)) {
+                    this.setState({ validationText: 'Pacjent z podanym id już istnieje' }, () => resolve(false));
+                }
+                else {
+                    resolve(true);
+                }
             }
         });
     }
 
     onChangeId = (patientId) => {
-        this.setState({ validationText: '', patientId });
+        this.setState({ validationText: '', patientId: patientId.trim().toLowerCase() });
         this.debouncedValidatePatientId(patientId);
     }
 
@@ -50,21 +46,18 @@ class NewPatient extends React.Component {
     }
 
     createPatient = () => {
-        this.validatePatientId(this.state.patientId)
+        this.debouncedValidatePatientId(this.state.patientId)
             .then((valid) => {
                 if (valid) {
-                    this.setState({ isSaving: true });
-                    fetch(`${REACT_APP_SERVER_URL}/patients/new`, {
-                        method: 'POST',
-                        headers: { Accept: 'application/json', 'Content-Type': 'application/json', },
-                        body: JSON.stringify({
+                    this.setState({ isSaving: true }, () => {
+                        patients.addPatient({
                             patientId: this.state.patientId,
                             age: this.state.age,
                         })
-                    })
                         .then((newPatient) => {
-                            this.props.navigation.replace('Patient', { id: newPatient._id });
+                            this.props.navigation.replace('Patient', { id: newPatient.patientId });
                         });
+                    });
                 }
             });
     }

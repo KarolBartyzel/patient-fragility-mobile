@@ -13,6 +13,7 @@
   "dependencies": {
     "@expo/samples": "2.1.1",
     "expo": "^32.0.0",
+    "firebase": "^6.1.0",
     "lodash": "^4.17.11",
     "metro-react-native-babel-preset": "^0.53.1",
     "prop-types": "^15.7.2",

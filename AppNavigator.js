@@ -27,7 +27,7 @@ const AppStack = createStackNavigator(
         initialRouteName: "Home",
         defaultNavigationOptions: ({ screenProps, navigation }) => {
             return {
-                headerRight: <NavigationRightSide navigation={navigation} signOutUser={() => screenProps.setAuth(null)} />
+                headerRight: <NavigationRightSide navigation={navigation} />
             };
         }
     }
