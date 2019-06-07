@@ -6,6 +6,8 @@ import AuthScreen from './screens/AuthScreen';
 import HomeScreen from './screens/HomeScreen';
 import NewPatientScreen from './screens/NewPatientScreen';
 import PatientScreen from './screens/PatientScreen';
+import PatientTestScreen from './screens/PatientTestScreen';
+import NewPatientTestScreen from './screens/NewPatientTestScreen';
 
 import NewExaminationScreen from './screens/NewExaminationScreen';
 import ExaminationResultsScreen from './screens/ExaminationResultsScreen';
@@ -18,6 +20,8 @@ const AppStack = createStackNavigator(
         Home: HomeScreen,
         NewPatient: NewPatientScreen,
         Patient: PatientScreen,
+        PatientTest: PatientTestScreen,
+        NewPatientTest: NewPatientTestScreen,
 
         NewExamination: NewExaminationScreen,
         ExaminationResults: ExaminationResultsScreen,

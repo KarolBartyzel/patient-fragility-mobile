@@ -6,20 +6,19 @@ import Patient from './../components/Patient';
 export default function PatientScreen(props) {
     return (
         <View style={styles.container}>
-            <Patient {...props} />
+            <Patient patientId={props.navigation.state.params.id} navigation={props.navigation} />
         </View>
     );
 }
 
 PatientScreen.navigationOptions = ({ navigation }) => {
     return {
-        title: "Pacjent",
+        title: `Pacjent ${navigation.state.params.id}`,
     };
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flex: 1
     },
 });
-
