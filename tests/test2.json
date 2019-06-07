@@ -3,5 +3,27 @@
     "title": "Kliniczna skala kruchości",
     "name": "Kliniczna skala kruchości",
     "maxScore": 20,
-    "questions": []
+    "questions": [
+        {
+            "id": "1",
+            "question": "Do you like pizza?",
+            "questionType": 1,
+            "maxPoints": null,
+            "imagePath": null
+        }, 
+        {
+            "id": "2",
+            "question": "Do you like spaghetti?",
+            "questionType": 1,
+            "maxPoints": null,
+            "imagePath": null
+        }, 
+        {
+            "id": "3",
+            "question": "Do you like cola?",
+            "questionType": 1,
+            "maxPoints": null,
+            "imagePath": null
+        }
+    ]
 }

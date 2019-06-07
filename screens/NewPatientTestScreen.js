@@ -1,10 +1,12 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
+
+import NewPatientTest from './../components/NewPatientTest';
 
 export default function NewPatientTestScreen(props) {
     return (
         <View>
-            <Text>NewPatientTestScreen</Text>
+            <NewPatientTest patientId={props.navigation.state.params.id} testId={props.navigation.state.params.testId} navigation={props.navigation} />
         </View>
     );
 }
