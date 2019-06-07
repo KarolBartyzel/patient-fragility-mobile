@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     newPatientButtonContent: {
         paddingTop: 5,
         paddingBottom: 5
-    }
+    },
 });
 
 NewPatient.propTypes = {
