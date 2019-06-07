@@ -6,7 +6,7 @@ import { initializeApp } from 'firebase';
 import 'moment/locale/pl.js';
 import { FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, FIREBASE_DATABASE_URL, FIREBASE_PROJECT_ID, FIREBASE_STORAGE_BUCKET, FIREBASE_MESSAGING_SENDER_ID, FIREBASE_APP_ID } from 'react-native-dotenv';
 
-import AppNavigator from './AppNavigator';
+import AppNavigator from './src/AppNavigator';
 
 initializeApp({
     apiKey: FIREBASE_API_KEY,
