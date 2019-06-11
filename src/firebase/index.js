@@ -1,3 +1,3 @@
 import * as patients from './patients';
 
-export { patients };
+export default { patients };

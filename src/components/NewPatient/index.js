@@ -4,7 +4,7 @@ import { TextInput, HelperText, Button, Card, ActivityIndicator } from 'react-na
 import PropTypes from 'prop-types';
 import { debounce } from 'lodash';
 
-import { patients } from './../../firebase';
+import db from './../../firebase';
 
 class NewPatient extends React.Component {
     constructor(props) {
@@ -22,15 +22,12 @@ class NewPatient extends React.Component {
         return new Promise(async (resolve, reject) => {
             if (!patientId) {
                 this.setState({ validationText: 'Id pacjenta jest wymagane' }, () => resolve(false));
-                ;
+            }
+            else if (await db.patients.checkIfPatientExists(patientId)) {
+                this.setState({ validationText: 'Pacjent z podanym id już istnieje' }, () => resolve(false));
             }
             else {
-                if (await patients.checkIfPatientExists(patientId)) {
-                    this.setState({ validationText: 'Pacjent z podanym id już istnieje' }, () => resolve(false));
-                }
-                else {
-                    resolve(true);
-                }
+                resolve(true);
             }
         });
     }
@@ -50,13 +47,11 @@ class NewPatient extends React.Component {
             .then((valid) => {
                 if (valid) {
                     this.setState({ isSaving: true }, () => {
-                        patients.addPatient({
-                            patientId: this.state.patientId,
-                            age: this.state.age,
-                        })
-                        .then((newPatient) => {
-                            this.props.replace('Patient', { id: newPatient.patientId });
-                        });
+                        db.patients
+                            .addPatient(this.state.patientId, this.state.age)
+                            .then(() => {
+                                this.props.replace('Patient', { id: this.state.patientId });
+                            });
                     });
                 }
             });
