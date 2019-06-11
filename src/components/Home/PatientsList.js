@@ -18,9 +18,7 @@ function PatientsList(props) {
             {props.patients && (
                 <FlatList
                     style={styles.patientsListContent}
-                    onEndReached={props.onLoadMore}
                     keyExtractor={(patient) => String(patient.patientId)}
-                    onEndReachedThreshold={0.75}
                     data={props.patients}
                     renderItem={({ item: patient }) => (
                         <TouchableHighlight onPress={() => { props.navigate('Patient', { id: patient.patientId }); }}>
@@ -39,8 +37,7 @@ function PatientsList(props) {
 
 PatientsList.propTypes = {
     patients: PropTypes.arrayOf(PropTypes.shape({ patientId: PropTypes.string.isRequired, age: PropTypes.number })),
-    navigate: PropTypes.func.isRequired,
-    onLoadMore: PropTypes.func.isRequired,
+    navigate: PropTypes.func.isRequired
 };
 
 const styles = StyleSheet.create({

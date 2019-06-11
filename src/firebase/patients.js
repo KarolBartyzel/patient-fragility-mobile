@@ -1,36 +1,33 @@
 import firebase from 'firebase';
 
 const PATIENTS = 'patients';
+const USERS = 'users';
 
-function getPatients(pageSize, startAt, searchPatientQuery) {
+import testsDefinitions from './../../assets/tests';
+
+// Helpers
+function getUserGroups() {
+    const { currentUser } = firebase.auth();
     return new Promise((resolve, reject) => {
-        const ordered = firebase.database()
-            .ref(PATIENTS)
-            .orderByChild('patientId');
-
-        const filtered = searchPatientQuery
-            ? ordered
-                .startAt(searchPatientQuery)
-                .endAt(`${searchPatientQuery}\uf8ff`)
-            : ordered
-                .startAt(startAt);
-
-        filtered
-            .limitToFirst(pageSize + 1)
+        firebase.database()
+            .ref(USERS)
+            .orderByChild('gmail')
+            .equalTo(currentUser.email)
             .once('value', (snapshot) => {
-                const items = [];
-                let newStartAt = null;
-                let i = 0;
-                snapshot.forEach((child) => {
-                    if (i < pageSize) {
-                        items.push(child.val());
-                    }
-                    else {
-                        newStartAt = child.val().patientId;
-                    }
-                    i++;
-                });
-                resolve({ items, startAt: newStartAt });
+                const currentUserInfo = Object.values(snapshot.val())[0];
+                resolve(currentUserInfo.groups);
+            });
+    });
+}
+
+// Exported
+async function getPatients() {
+    return new Promise((resolve, reject) => {
+        firebase.database()
+            .ref(PATIENTS)
+            .once('value', (snapshot) => {
+                const patients = Object.values(snapshot.val());
+                resolve(patients);
             });
     });
 }
@@ -40,26 +37,48 @@ function checkIfPatientExists(searchPatientQuery) {
         firebase.database()
             .ref(PATIENTS)
             .orderByChild('patientId')
-            .equalTo(searchPatientQuery.toLowerCase())
+            .equalTo(searchPatientQuery)
             .once('value', (snapshot) => {
                 resolve(snapshot.val() !== null);
             });
     });
 }
 
-function addPatient(patient) {
-    const newPatient = {
-        patientId: patient.patientId,
-        age: !patient.age ? null : Number(patient.age),
-        createdAt: Date.now()
-    };
-
-    return firebase.database()
-        .ref(PATIENTS)
-        .push(newPatient);
+function addPatient(patientId, age) {
+    const patientsRef = firebase.database().ref(PATIENTS);
+    return new Promise((resolve, reject) => {
+        patientsRef
+        .orderByChild('patientId')
+        .equalTo(patientId)
+        .once('value', (snapshot) => {
+            if (snapshot.val()) {
+                const [existingUserKey, existingUser] = Object.entries(snapshot.val())[0];
+                snapshot.ref.child(existingUserKey)
+                    .update({
+                        age: age ? Number(age) : existingUser.age,
+                        updatedAt: Date.now()
+                    })
+                    .then(resolve);
+            }
+            else {
+                patientsRef
+                    .push({
+                        patientId,
+                        age: age ? Number(age) : null,
+                        tests: testsDefinitions.map((testDefinition) => ({
+                            testId: testDefinition.id,
+                            results: []
+                        })),
+                        createdAt: Date.now()
+                    })
+                    .then(resolve);
+            }
+        });
+    });
 }
 
-function getPatient(patientId) {
+async function getPatient(patientId) {
+    const userGroups = await getUserGroups();
     return new Promise((resolve, reject) => {
         firebase.database()
             .ref(PATIENTS)
@@ -67,26 +86,42 @@ function getPatient(patientId) {
             .equalTo(patientId)
             .once('value', (snapshot) => {
                 const [key, patient] = Object.entries(snapshot.val())[0];
-                resolve({ ...patient, key });
+
+                resolve({
+                    ...patient,
+                    key,
+                    tests: patient.tests.map((test) => ({
+                        ...test,
+                        results: test.results ? test.results.filter(testResult => userGroups.includes(testResult.group)) : [],
+                    }))
+                });
             });
     });
 }
 
-// patients.addPatientTest(patient.key, { testId: 1, score: 10, description: 'Średnia kruchość', date: Date.now() });
-// patients.addPatientTest(patient.key, { testId: 2, score: 15, description: 'Mała kruchość', date: Date.now() });
-function addPatientTest(key, test) {
+// Usage db.patients.addPatientTest(patient.key, "1", { testId: "1", score: 15, description: 'Mała kruchość' });
+function addPatientTest(key, group, testResult) {
+    const { currentUser } = firebase.auth();
+
     const ref = firebase.database()
         .ref(PATIENTS)
         .child(key);
 
     return ref
         .once('value', (snapshot) => {
-            let { tests } = snapshot.val();
-            if (tests === undefined) {
-                tests = [];
-            }
-            tests.push(test);
-            ref.update({ tests });
+            const { tests } = snapshot.val();
+            const updatedTests = tests.map(test => test.testId === testResult.testId ? {
+                ...test,
+                results: [ ...(test.results || []), {
+                    author: `${currentUser.displayName} (${currentUser.email})`,
+                    group,
+                    score: testResult.score,
+                    description: testResult.description,
+                    date: Date.now()
+                } ]
+            } : test);
+
+            ref.update({ tests: updatedTests });
         });
 }
 

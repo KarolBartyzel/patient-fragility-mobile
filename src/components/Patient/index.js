@@ -1,9 +1,10 @@
 import React from 'react';
 import { StyleSheet, View, FlatList } from 'react-native';
-import { ActivityIndicator, List, IconButton } from 'react-native-paper';
+import { ActivityIndicator, List, IconButton, Text } from 'react-native-paper';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 
-import { patients } from './../../firebase';
+import db from './../../firebase';
 import testsDefinitions from './../../../assets/tests';
 
 class Patient extends React.Component {
@@ -13,15 +14,19 @@ class Patient extends React.Component {
     }
 
     async componentDidMount() {
-        const patient = await patients.getPatient(this.props.patientId);
-        const { tests: filledPatientTests } = patient;
-        patient.tests = testsDefinitions.map(testDefinition => {
-            return {
-                ...filledPatientTests.filter(filledTest => String(filledTest.testId) === testDefinition.id).sort((ft1, ft2) => ft1.date < ft2.date ? 1 : -1)[0],
-                ...testDefinition
-            };
-        })
-        this.setState({ patient });
+        const patient = await db.patients.getPatient(this.props.patientId);
+
+        const tests = patient.tests.map((test) => ({
+            ...testsDefinitions.find(td => td.id === test.testId),
+            results: test.results.sort((ft1, ft2) => ft1.date < ft2.date ? 1 : -1)
+        }));
+
+        this.setState({
+            patient: {
+                ...patient,
+                tests
+            }
+        });
     }
 
     render() {
@@ -38,18 +43,21 @@ class Patient extends React.Component {
                 <FlatList
                     keyExtractor={(test) => String(test.id)}
                     data={this.state.patient.tests}
-                    renderItem={({ item: test }) => (
-                        <List.Item
-                            title={test.title}
-                            description={test.score ? `${test.description} (${test.score} / ${test.maxScore})`: 'Brak'}
-                            right={() => (
-                                <View style={styles.patientDetailsTestButtons}>
-                                    <IconButton icon="info" size={25} onPress={() => { this.props.navigate('PatientTest', { id: this.props.patientId, testId: test.id }); }} />
-                                    <IconButton icon="add" size={25} onPress={() => { this.props.navigate('NewPatientTest', { id: this.props.patientId, testId: test.id }); }} />
-                                </View>
-                            )}
-                        />
-                    )}
+                    renderItem={({ item: test }) => {
+                        const lastResult = test.results[0];
+                        return (
+                            <List.Item
+                                title={test.title}
+                                description={lastResult ? `${lastResult.description}\n${moment(lastResult.date).format("Do MMM YYYY")} (${lastResult.score} / ${test.maxScore})`: 'Brak wyników'}
+                                right={() => (
+                                    <View style={styles.patientDetailsTestRight}>
+                                        <IconButton icon="info" size={30} disabled={!lastResult} onPress={() => { this.props.navigate('PatientTest', { patientId: this.props.patientId, testId: test.id }); }} />
+                                        <IconButton icon="add" size={30} onPress={() => { this.props.navigate('NewPatientTest', { id: this.props.patientId, testId: test.id }); }} />
+                                    </View>
+                                )}
+                            />
+                        );
+                    }}
                 />
             </View>
         );
@@ -67,11 +75,12 @@ const styles = StyleSheet.create({
         width: '100%',
         justifyContent: 'center',
     },
-    patientDetailsTestButtons: {
+    patientDetailsTestRight: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        textAlign: 'center'
     }
 });
 
