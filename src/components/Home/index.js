@@ -49,13 +49,11 @@ class Home extends React.Component {
 
     render() {
         return (
-            <>
             <Card style={styles.homeCard}>
                 <NewPatient navigate={this.props.navigate} />
                 <PatientSearch searchPatientQuery={this.state.searchPatientQuery} setSearchPatientQuery={this.setSearchPatientQuery} />
                 <PatientsList patients={this.state.patients} navigate={this.props.navigate} />
             </Card>
-            </>
         );
     }
 }

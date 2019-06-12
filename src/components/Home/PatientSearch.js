@@ -1,38 +1,39 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import { Card, Searchbar, } from 'react-native-paper';
+import { View, StyleSheet } from 'react-native';
+import { Searchbar, } from 'react-native-paper';
 import PropTypes from 'prop-types';
+
+import Export from './../Export';
 
 function PatientSearch(props) {
     return (
-        <Card.Title
+        <View
             style={styles.patientSearch}
-            right={() => <Searchbar
+        >
+            <Searchbar
                 style={styles.patientSearchInput}
                 placeholder="Szukaj pacjenta..."
                 onChangeText={props.setSearchPatientQuery}
                 value={props.searchPatientQuery}
-            />}
-        />
+            />
+            <Export />
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
     patientSearch: {
-        paddingRight: 16,
-        flexDirection: 'column',
+        paddingLeft: 15,
+        paddingRight: 15,
+        paddingTop: 10,
+        paddingBottom: 10,
+        flexDirection: 'row',
         alignItems: 'center',
-    },
-    patientSearchTitle: {
-        textAlign: 'center',
-        flex: 1,
-        margin: 10,
+        justifyContent: 'center'
     },
     patientSearchInput: {
         height: 30,
-        width: '90%',
-        marginBottom: 10,
-        marginTop: 10,
+        flex: 1,
     },
 });
 
