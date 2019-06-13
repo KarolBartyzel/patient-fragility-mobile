@@ -9,7 +9,7 @@ function exportTests(type, patientId, address) {
     return new Promise((resolve, reject) => {
         sendWithToken((token) => {
             firebase.auth().currentUser.getIdToken().then(token => {
-                fetch(`${FIREBASE_FUNCTIONS_URL}/export?type=${type}&address=${address}&patientId=${patientId}`, { method: 'get',  headers: new Headers({ 'Authorization': `Bearer ${token}` }) });
+                return fetch(`${FIREBASE_FUNCTIONS_URL}/export?type=${type}&address=${address}&patientId=${patientId}`, { method: 'get',  headers: new Headers({ 'Authorization': `Bearer ${token}` }) });
             })
             .then(resolve)
             .catch(reject);
