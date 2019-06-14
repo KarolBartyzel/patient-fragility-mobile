@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, FlatList } from 'react-native';
-import { ActivityIndicator, List, IconButton, Text } from 'react-native-paper';
+import { ActivityIndicator, List, IconButton } from 'react-native-paper';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
@@ -14,23 +14,15 @@ class Patient extends React.Component {
     }
 
     async componentDidMount() {
-        const patient = await db.patients.getPatient(this.props.patientId);
-
-        const tests = patient.tests.map((test) => ({
-            ...testsDefinitions.find(td => td.id === test.testId),
-            results: test.results.sort((ft1, ft2) => ft1.date < ft2.date ? 1 : -1)
-        }));
+        const lastTestResults = await db.patients.getPatientLastResults(this.props.patientId);
 
         this.setState({
-            patient: {
-                ...patient,
-                tests
-            }
+            lastTestResults
         });
     }
 
     render() {
-        if (!this.state.patient) {
+        if (!this.state.lastTestResults) {
             return (
                 <View style={styles.patientScreen}>
                     <ActivityIndicator />
@@ -41,18 +33,18 @@ class Patient extends React.Component {
         return (
             <View style={styles.patientScreen}>
                 <FlatList
-                    keyExtractor={(test) => String(test.id)}
-                    data={this.state.patient.tests}
-                    renderItem={({ item: test }) => {
-                        const lastResult = test.results[0];
+                    keyExtractor={(testResult, index) => String(index)}
+                    data={this.state.lastTestResults}
+                    renderItem={({ item: testResult, index }) => {
+                        const testDefinition = testsDefinitions[index];
                         return (
                             <List.Item
-                                title={test.title}
-                                description={lastResult ? `${lastResult.description}\n${moment(lastResult.date).format("Do MMM YYYY")} (${lastResult.score} / ${test.maxScore})`: 'Brak wyników'}
+                                title={testDefinition.title}
+                                description={testResult ? `${testResult.description}\n${moment(testResult.date).format("Do MMM YYYY")} (${testResult.score} / ${testDefinition.maxScore})`: 'Brak wyników'}
                                 right={() => (
                                     <View style={styles.patientDetailsTestRight}>
-                                        <IconButton icon="info" size={30} disabled={!lastResult} onPress={() => { this.props.navigate('PatientTest', { patientId: this.props.patientId, testId: test.id }); }} />
-                                        <IconButton icon="add" size={30} onPress={() => { this.props.navigate('NewPatientTest', { id: this.props.patientId, testId: test.id }); }} />
+                                        <IconButton icon="info" size={30} disabled={!testResult} onPress={() => { this.props.navigate('PatientTest', { patientId: this.props.patientId, testId: testDefinition.testId }); }} />
+                                        <IconButton icon="add" size={30} onPress={() => { this.props.navigate('NewPatientTest', { patientId: this.props.patientId, testId: testDefinition.testId }); }} />
                                     </View>
                                 )}
                             />

@@ -1,5 +1,5 @@
 {
-    "id": "2",
+    "testId": "2",
     "title": "Kliniczna skala kruchości",
     "name": "Kliniczna skala kruchości",
     "maxScore": 20,
@@ -10,14 +10,14 @@
             "questionType": 1,
             "maxPoints": null,
             "imagePath": null
-        }, 
+        },
         {
             "id": "2",
             "question": "Do you like spaghetti?",
             "questionType": 1,
             "maxPoints": null,
             "imagePath": null
-        }, 
+        },
         {
             "id": "3",
             "question": "Do you like cola?",

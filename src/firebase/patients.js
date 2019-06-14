@@ -1,32 +1,34 @@
 import firebase from 'firebase';
 
-const PATIENTS = 'patients';
-const USERS = 'users';
-
 import testsDefinitions from './../../assets/tests';
+import { User, Patient, TestResult } from './models';
 
 // Helpers
 function getUserGroups() {
     const { currentUser } = firebase.auth();
     return new Promise((resolve, reject) => {
         firebase.database()
-            .ref(USERS)
-            .orderByChild('gmail')
+            .ref(User.COLLECTION)
+            .orderByChild(User.GMAIL)
             .equalTo(currentUser.email)
             .once('value', (snapshot) => {
-                const currentUserInfo = Object.values(snapshot.val())[0];
+                const currentUserInfo = new User(Object.values(snapshot.val())[0]);
                 resolve(currentUserInfo.groups);
             });
     });
 }
 
 // Exported
-async function getPatients() {
+async function getPatients(patientId) {
     return new Promise((resolve, reject) => {
-        firebase.database()
-            .ref(PATIENTS)
+        const orderedQuery = firebase.database()
+            .ref(Patient.COLLECTION)
+            .orderByChild(Patient.ID);
+
+        (patientId ? orderedQuery.startAt(patientId).endAt(`${patientId}\uf8ff`) : orderedQuery)
             .once('value', (snapshot) => {
-                const patients = Object.values(snapshot.val());
+                const value = snapshot.val();
+                const patients = value ? Object.values(value).map((rawPatient) => new Patient(rawPatient)) : [];
                 resolve(patients);
             });
     });
@@ -35,8 +37,8 @@ async function getPatients() {
 function checkIfPatientExists(searchPatientQuery) {
     return new Promise((resolve, reject) => {
         firebase.database()
-            .ref(PATIENTS)
-            .orderByChild('patientId')
+            .ref(Patient.COLLECTION)
+            .orderByChild(Patient.ID)
             .equalTo(searchPatientQuery)
             .once('value', (snapshot) => {
                 resolve(snapshot.val() !== null);
@@ -44,85 +46,65 @@ function checkIfPatientExists(searchPatientQuery) {
     });
 }
 
-function addPatient(patientId, age) {
-    const patientsRef = firebase.database().ref(PATIENTS);
-    return new Promise((resolve, reject) => {
-        patientsRef
-        .orderByChild('patientId')
-        .equalTo(patientId)
-        .once('value', (snapshot) => {
-            if (snapshot.val()) {
-                const [existingUserKey, existingUser] = Object.entries(snapshot.val())[0];
-                snapshot.ref.child(existingUserKey)
-                    .update({
-                        age: age ? Number(age) : existingUser.age,
-                        updatedAt: Date.now()
-                    })
-                    .then(resolve);
-            }
-            else {
-                patientsRef
-                    .push({
-                        patientId,
-                        age: age ? Number(age) : null,
-                        tests: testsDefinitions.map((testDefinition) => ({
-                            testId: testDefinition.id,
-                            results: []
-                        })),
-                        createdAt: Date.now()
-                    })
-                    .then(resolve);
-            }
-        });
+async function addPatient(id, age) {
+    const newPatient = new Patient({
+        id,
+        age: age ? Number(age) : null,
+        createdAt: Date.now()
     });
+
+    return firebase
+        .database()
+        .ref(`/${Patient.COLLECTION}/${id}`)
+        .set(newPatient);
 }
 
-async function getPatient(patientId) {
+async function getPatientResults(patientId) {
     const userGroups = await getUserGroups();
     return new Promise((resolve, reject) => {
         firebase.database()
-            .ref(PATIENTS)
-            .orderByChild('patientId')
+            .ref(TestResult.COLLECTION)
+            .orderByChild(TestResult.PATIENT_ID)
             .equalTo(patientId)
             .once('value', (snapshot) => {
-                const [key, patient] = Object.entries(snapshot.val())[0];
-
-                resolve({
-                    ...patient,
-                    key,
-                    tests: patient.tests.map((test) => ({
-                        ...test,
-                        results: test.results ? test.results.filter(testResult => userGroups.includes(testResult.group)) : [],
-                    }))
-                });
+                const value = snapshot.val();
+                const testResults = value ?  Object.values(value).filter(testResult => userGroups.includes(testResult.group)) : [];
+                resolve(testResults);
             });
     });
 }
 
-// Usage db.patients.addPatientTest(patient.key, "1", { testId: "1", score: 15, description: 'Mała kruchość' });
-function addPatientTest(key, group, testResult) {
-    const { currentUser } = firebase.auth();
-
-    const ref = firebase.database()
-        .ref(PATIENTS)
-        .child(key);
-
-    return ref
-        .once('value', (snapshot) => {
-            const { tests } = snapshot.val();
-            const updatedTests = tests.map(test => test.testId === testResult.testId ? {
-                ...test,
-                results: [ ...(test.results || []), {
-                    author: `${currentUser.displayName} (${currentUser.email})`,
-                    group,
-                    score: testResult.score,
-                    description: testResult.description,
-                    date: Date.now()
-                } ]
-            } : test);
-
-            ref.update({ tests: updatedTests });
-        });
+async function getPatientLastResults(patientId) {
+    const patientResults = await getPatientResults(patientId);
+    const sortedPatientResults = patientResults.sort((ft1, ft2) => ft1.date < ft2.date ? 1 : -1);
+    const patientLastResults = testsDefinitions.map((testDefinition) => sortedPatientResults.find((spr) => spr.testId === testDefinition.testId) || null);
+    return patientLastResults;
 }
 
-export { getPatients, getPatient, addPatient, checkIfPatientExists, addPatientTest };
+async function getPatientTestResults(patientId, testId) {
+    const patientResults = await getPatientResults(patientId);
+    const patientTestResults = patientResults.filter((testResult) => testResult.testId === testId);
+    return patientTestResults;
+}
+
+// Usage db.patients.addPatientTest(testId, patientId, "1", 15, 'Mała kruchość');
+function addPatientTest(testId, patientId, group, score, description) {
+    const { currentUser } = firebase.auth();
+
+    const newTestResult = new TestResult({
+        testId,
+        userId: currentUser.uid,
+        userName: `${currentUser.displayName} (${currentUser.email})`,
+        patientId,
+        group,
+        score,
+        description,
+        date: Date.now()
+    });
+
+    return firebase.database()
+        .ref(TestResult.COLLECTION)
+        .push(newTestResult);
+}
+
+export { getPatients, getPatientLastResults, getPatientTestResults, addPatient, checkIfPatientExists, addPatientTest };

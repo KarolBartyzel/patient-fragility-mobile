@@ -9,55 +9,44 @@ import testsDefinitions from './../../../assets/tests';
 class PatientTest extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            test: {
-                ...testsDefinitions.find(td => td.id === this.props.testId),
-            }
-        };
+        this.state = { };
     }
 
     async componentDidMount() {
-        const patient = await db.patients.getPatient(this.props.patientId);
-        const test = patient.tests.find((t) => t.testId === this.props.testId);
+        const testResults = await db.patients.getPatientTestResults(this.props.patientId, this.props.testId);
 
         this.setState({
-            patient: {
-                patientId: patient.patientId,
-                age: patient.age
-            },
-            test: {
-                ...testsDefinitions.find(td =>  td.id === this.props.testId),
-                ...test,
-                results: test.results.sort((ft1, ft2) => ft1.date < ft2.date ? 1 : -1)
-            }
+            testResults
         });
     }
 
     render() {
-        const { test } = this.state;
+        const testDefinition = testsDefinitions.find((testDefinition) => testDefinition.testId === this.props.testId);
+        const { testResults } = this.state;
 
         return (
             <Card style={styles.patientTestCard}>
                 <Card.Title
-                    title={`${test.title} - wyniki`}
+                    title={`${testDefinition.title} - wyniki`}
                     right={(props) => <IconButton {...props} icon="add" size={30} onPress={() => { this.props.navigate('NewPatientTest', { id: this.props.patientId, testId: this.props.testId }); }} /> }
                 />
 
-                {!this.state.patient && (
+                {!testResults && (
                     <View style={styles.patientTestProgress}>
                         <ActivityIndicator />
                     </View>
                 )}
-                {this.state.patient && (
+                {!!testResults && (
                     <View style={styles.patientTestsWrapper}>
                         <FlatList
                             style={styles.patientsListContent}
-                            keyExtractor={(testResult) => String(testResult.testId)}
-                            data={test.results}
+                            keyExtractor={(testResult, index) => String(index)}
+                            data={testResults}
                             renderItem={({ item: testResult }) => (
                                 <List.Item
                                     title={testResult.description}
-                                    description={`${moment(testResult.date).format("Do MMM YYYY")} (${testResult.score} / ${test.maxScore})\n${testResult.author}`}
+                                    description={`${moment(testResult.date).format("Do MMM YYYY")} (${testResult.score} / ${testDefinition
+                                        .maxScore})\n${testResult.userName}`}
                                 />
                             )}
                         />

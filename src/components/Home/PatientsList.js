@@ -18,12 +18,12 @@ function PatientsList(props) {
             {props.patients && (
                 <FlatList
                     style={styles.patientsListContent}
-                    keyExtractor={(patient) => String(patient.patientId)}
+                    keyExtractor={(patient) => String(patient.id)}
                     data={props.patients}
                     renderItem={({ item: patient }) => (
-                        <TouchableHighlight onPress={() => { props.navigate('Patient', { id: patient.patientId }); }}>
+                        <TouchableHighlight onPress={() => { props.navigate('Patient', { patientId: patient.id }); }}>
                             <View style={styles.patientsListEntry}>
-                                <Text style={styles.patientsListEntryPart}>{patient.patientId}</Text>
+                                <Text style={styles.patientsListEntryPart}>{patient.id}</Text>
                                 <Text style={styles.patientsListEntryPart}>{patient.age ? `${patient.age} lat(a)` : 'Nieznany'}</Text>
                             </View>
                         </TouchableHighlight>
@@ -36,7 +36,7 @@ function PatientsList(props) {
 }
 
 PatientsList.propTypes = {
-    patients: PropTypes.arrayOf(PropTypes.shape({ patientId: PropTypes.string.isRequired, age: PropTypes.number })),
+    patients: PropTypes.arrayOf(PropTypes.shape({ id: PropTypes.string.isRequired, age: PropTypes.number })),
     navigate: PropTypes.func.isRequired
 };
 

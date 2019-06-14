@@ -5,7 +5,7 @@ import Patient from './../components/Patient';
 
 export default function PatientScreen(props) {
     return (
-        <Patient navigate={props.navigation.navigate} patientId={props.navigation.state.params.id} />
+        <Patient navigate={props.navigation.navigate} patientId={props.navigation.state.params.patientId} />
     );
 }
 
@@ -14,7 +14,7 @@ PatientScreen.propTypes = {
         navigate: PropTypes.func.isRequired,
         state: PropTypes.shape({
             params: PropTypes.shape({
-                id: PropTypes.string.isRequired
+                patientId: PropTypes.string.isRequired
             })
         })
     }).isRequired
@@ -22,6 +22,6 @@ PatientScreen.propTypes = {
 
 PatientScreen.navigationOptions = ({ navigation }) => {
     return {
-        title: `Pacjent ${navigation.state.params.id}`,
+        title: `Pacjent ${navigation.state.params.patientId}`,
     };
 }
