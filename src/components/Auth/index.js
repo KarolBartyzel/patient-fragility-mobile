@@ -6,6 +6,8 @@ import { Ionicons } from '@expo/vector-icons';
 import firebase from 'firebase';
 import PropTypes from 'prop-types';
 
+import db from './../../firebase';
+
 const CONFIG = {
     issuer: 'https://accounts.google.com',
     clientId: CLIENT_ID,
@@ -30,25 +32,29 @@ class Auth extends React.Component {
                     unsubscribe();
                     const credential = firebase.auth.GoogleAuthProvider.credential(googleUser.idToken, googleUser.accessToken);
                     firebase.auth().signInWithCredential(credential)
-                        .then((result) => {
-                            if (result.additionalUserInfo.isNewUser) {
+                        .then(( { user, additionalUserInfo }) => {
+                            if (additionalUserInfo.isNewUser) {
+                                const newUser = new db.models.User({
+                                    id: user.uid,
+                                    firstName: additionalUserInfo.profile.given_name,
+                                    lastName: additionalUserInfo.profile.family_name,
+                                    gmail: user.email,
+                                    profilePicture: additionalUserInfo.profile.picture,
+                                    createdAt: Date.now(),
+                                    lastLoggedInAt: Date.now(),
+                                    groups: ['0']
+                                });
                                 firebase
                                     .database()
-                                    .ref(`/users/${result.user.uid}`)
-                                    .set({
-                                        gmail: result.user.email,
-                                        profile_picture: result.additionalUserInfo.profile.picture,
-                                        first_name: result.additionalUserInfo.profile.given_name,
-                                        last_name: result.additionalUserInfo.profile.family_name,
-                                        created_at: Date.now()
-                                    });
+                                    .ref(`/${db.models.User.COLLECTION}/${user.uid}`)
+                                    .set(newUser);
                             }
                             else {
                                 firebase
                                     .database()
-                                    .ref(`/users/${result.user.uid}`)
+                                    .ref(`/users/${user.uid}`)
                                     .update({
-                                        last_logged_in: Date.now()
+                                        lastLoggedInAt: Date.now()
                                     });
                             }
                         })

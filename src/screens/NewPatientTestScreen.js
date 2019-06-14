@@ -5,7 +5,7 @@ import NewPatientTest from './../components/NewPatientTest';
 
 export default function NewPatientTestScreen(props) {
     return (
-        <NewPatientTest patientId={props.navigation.state.params.id} testId={props.navigation.state.params.testId} />
+        <NewPatientTest patientId={props.navigation.state.params.patientId} testId={props.navigation.state.params.testId} />
     );
 }
 
@@ -13,7 +13,7 @@ NewPatientTestScreen.propTypes = {
     navigation: PropTypes.shape({
         state: PropTypes.shape({
             params: PropTypes.shape({
-                id: PropTypes.string.isRequired,
+                patientId: PropTypes.string.isRequired,
                 testId: PropTypes.string.isRequired
             })
         })
@@ -22,6 +22,6 @@ NewPatientTestScreen.propTypes = {
 
 NewPatientTestScreen.navigationOptions = ({ navigation }) => {
     return {
-        title: `Pacjent ${navigation.state.params.id}`,
+        title: `Pacjent ${navigation.state.params.patientId}`,
     };
 }

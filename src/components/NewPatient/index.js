@@ -23,7 +23,7 @@ class NewPatient extends React.Component {
             if (!patientId) {
                 this.setState({ validationText: 'Id pacjenta jest wymagane' }, () => resolve(false));
             }
-            else if (await db.patients.checkIfPatientExists(patientId)) {
+            else if (await db.patients.checkIfPatientExists(patientId.trim())) {
                 this.setState({ validationText: 'Pacjent z podanym id już istnieje' }, () => resolve(false));
             }
             else {
@@ -33,7 +33,7 @@ class NewPatient extends React.Component {
     }
 
     onChangeId = (patientId) => {
-        this.setState({ validationText: '', patientId: patientId.trim().toLowerCase() });
+        this.setState({ validationText: '', patientId: patientId.toLowerCase() });
         this.debouncedValidatePatientId(patientId);
     }
 
@@ -48,7 +48,7 @@ class NewPatient extends React.Component {
                 if (valid) {
                     this.setState({ isSaving: true }, () => {
                         db.patients
-                            .addPatient(this.state.patientId, this.state.age)
+                            .addPatient(this.state.patientId.trim(), this.state.age)
                             .then(() => {
                                 this.props.replace('Patient', { id: this.state.patientId });
                             });
