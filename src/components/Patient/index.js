@@ -39,7 +39,7 @@ class Patient extends React.Component {
                         const testDefinition = testsDefinitions[index];
                         return (
                             <List.Item
-                                title={testDefinition.title}
+                                title={`${testDefinition.title} (${testResult ? testResult.count : 0})`}
                                 description={testResult ? `${testResult.description}\n${moment(testResult.date).format("Do MMM YYYY")} (${testResult.score} / ${testDefinition.maxScore})`: 'Brak wyników'}
                                 right={() => (
                                     <View style={styles.patientDetailsTestRight}>
