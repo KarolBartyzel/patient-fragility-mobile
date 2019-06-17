@@ -1,4 +1,5 @@
 import firebase from 'firebase';
+import { groupBy } from 'lodash';
 
 import testsDefinitions from './../../assets/tests';
 import { User, Patient, TestResult } from './models';
@@ -77,7 +78,11 @@ async function getPatientResults(patientId) {
 async function getPatientLastResults(patientId) {
     const patientResults = await getPatientResults(patientId);
     const sortedPatientResults = patientResults.sort((ft1, ft2) => ft1.date < ft2.date ? 1 : -1);
-    const patientLastResults = testsDefinitions.map((testDefinition) => sortedPatientResults.find((spr) => spr.testId === testDefinition.testId) || null);
+    const groupedByTestPatientResults = groupBy(sortedPatientResults, 'testId');
+    const patientLastResults = testsDefinitions
+        .map((testDefinition) => groupedByTestPatientResults[testDefinition.testId])
+        .map((testsResults) => testsResults ? ({ count: testsResults.length, ... testsResults[0] }) : null);
+
     return patientLastResults;
 }
 
