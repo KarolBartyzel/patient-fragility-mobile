@@ -5,13 +5,14 @@ import Patient from './../components/Patient';
 
 export default function PatientScreen(props) {
     return (
-        <Patient navigate={props.navigation.navigate} patientId={props.navigation.state.params.patientId} />
+        <Patient navigate={props.navigation.navigate} patientId={props.navigation.state.params.patientId} addListener={props.navigation.addListener} />
     );
 }
 
 PatientScreen.propTypes = {
     navigation: PropTypes.shape({
         navigate: PropTypes.func.isRequired,
+        addListener: PropTypes.func.isRequired,
         state: PropTypes.shape({
             params: PropTypes.shape({
                 patientId: PropTypes.string.isRequired
