@@ -11,14 +11,24 @@ class Patient extends React.Component {
     constructor(props) {
         super(props);
         this.state = {};
+        this.onNavigateBack = this.props.addListener('willFocus', () => {
+            this.setState({ lastTestResults: null }, this.loadTestResults);
+        });
     }
 
-    async componentDidMount() {
+    loadTestResults = async () => {
         const lastTestResults = await db.patients.getPatientLastResults(this.props.patientId);
-
         this.setState({
             lastTestResults
         });
+    }
+
+    componentDidMount() {
+        this.loadTestResults();
+    }
+
+    componentWillUnmount() {
+        this.onNavigateBack.remove();
     }
 
     render() {
