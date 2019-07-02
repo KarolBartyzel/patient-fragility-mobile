@@ -50,7 +50,7 @@ class NewPatient extends React.Component {
                         db.patients
                             .addPatient(this.state.patientId.trim(), this.state.age)
                             .then(() => {
-                                this.props.replace('Patient', { id: this.state.patientId });
+                                this.props.replace('Patient', { patientId: this.state.patientId });
                             });
                     });
                 }
