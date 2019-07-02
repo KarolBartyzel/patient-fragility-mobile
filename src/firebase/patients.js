@@ -13,8 +13,13 @@ function getUserGroups() {
             .orderByChild(User.GMAIL)
             .equalTo(currentUser.email)
             .once('value', (snapshot) => {
-                const currentUserInfo = new User(Object.values(snapshot.val())[0]);
-                resolve(currentUserInfo.groups);
+                if (snapshot.exists()) {
+                    const currentUserInfo = new User(Object.values(snapshot.val())[0]);
+                    resolve(currentUserInfo.groups);
+                }
+                else {
+                    resolve(null);
+                }
             });
     });
 }
@@ -33,6 +38,11 @@ async function getPatients(patientId) {
                 resolve(patients);
             });
     });
+}
+
+async function isUserAuthorized() {
+    const userGroups = await getUserGroups();
+    return Boolean(userGroups);
 }
 
 function checkIfPatientExists(searchPatientQuery) {
@@ -112,4 +122,4 @@ function addPatientTest(testId, patientId, group, score, description) {
         .push(newTestResult);
 }
 
-export { getPatients, getPatientLastResults, getPatientTestResults, addPatient, checkIfPatientExists, addPatientTest };
+export { isUserAuthorized, getPatients, getPatientLastResults, getPatientTestResults, addPatient, checkIfPatientExists, addPatientTest };
