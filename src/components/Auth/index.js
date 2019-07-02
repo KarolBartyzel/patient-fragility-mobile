@@ -42,15 +42,15 @@ class Auth extends React.Component {
                                     profilePicture: additionalUserInfo.profile.picture,
                                     createdAt: Date.now(),
                                     lastLoggedInAt: Date.now(),
-                                    groups: ['0']
+                                    groups: []
                                 });
-                                firebase
+                                return firebase
                                     .database()
                                     .ref(`/${db.models.User.COLLECTION}/${user.uid}`)
                                     .set(newUser);
                             }
                             else {
-                                firebase
+                                return firebase
                                     .database()
                                     .ref(`/users/${user.uid}`)
                                     .update({
@@ -74,9 +74,15 @@ class Auth extends React.Component {
     }
 
     componentDidMount() {
-        this.firebaseAuthStateChangeUnsubscribe = firebase.auth().onAuthStateChanged(user => {
+        this.firebaseAuthStateChangeUnsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
             if (user) {
-                this.props.navigate('Home');
+                const isUserAuthorized = await db.patients.isUserAuthorized();
+                if (isUserAuthorized) {
+                    this.props.navigate('Home');
+                }
+                else {
+                    this.props.navigate('NewUser');
+                }
             }
             else {
                 this.setState({ isLoading: false });

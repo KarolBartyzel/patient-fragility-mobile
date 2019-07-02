@@ -6,6 +6,9 @@ import firebase from 'firebase';
 import PropTypes from 'prop-types';
 
 import AuthScreen from './screens/AuthScreen';
+
+import NewUserScreen from './screens/NewUser';
+
 import HomeScreen from './screens/HomeScreen';
 import NewPatientScreen from './screens/NewPatientScreen';
 import PatientScreen from './screens/PatientScreen';
@@ -79,12 +82,27 @@ const AppStack = createStackNavigator(
     }
 );
 
+const NewUserStack = createStackNavigator(
+    {
+        NewUser: NewUserScreen,
+    },
+    {
+        initialRouteName: 'NewUser',
+        defaultNavigationOptions: ({ navigation }) => {
+            return {
+                headerRight: <NavigationRightSide navigate={navigation.navigate} />
+            };
+        }
+    }
+)
+
 export default createAppContainer(createSwitchNavigator(
     {
         Auth: AuthScreen,
+        NewUser: NewUserStack,
         App: AppStack,
     },
     {
-        initialRouteName: 'Auth',
+        initialRouteName: 'Auth'
     }
 ));
