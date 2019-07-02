@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Button, Card, List, ActivityIndicator } from 'react-native-paper';
+import { Button, Card, List, ActivityIndicator, Text } from 'react-native-paper';
 import { CLIENT_ID } from 'react-native-dotenv';
 import { Ionicons } from '@expo/vector-icons';
 import firebase from 'firebase';
@@ -132,6 +132,11 @@ class Auth extends React.Component {
                             Zaloguj się z Google
                         </Button>
                     </Card.Actions>
+
+                    <View style={styles.authors}>
+                        <Text>Karol Bartyzel, Julia Sypień</Text>
+                        <Text>Kraków 2019</Text>
+                    </View>
                 </Card>
             </View>
         );
@@ -171,6 +176,13 @@ const styles = StyleSheet.create({
     cardTitleStyle: {
         textAlign: 'center'
     },
+    authors: {
+        position: 'absolute',
+        bottom: 10,
+        left: 0,
+        right: 0,
+        alignItems: 'center'
+    }
 });
 
 export default Auth;
