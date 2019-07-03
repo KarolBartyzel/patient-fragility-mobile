@@ -2,6 +2,140 @@
     "testId": "3",
     "title": "Ocena Stanu Psychicznego",
     "name": "Krótka Skala Oceny Stanu Psychicznego (MMSE)",
-    "maxScore": 20,
-    "questions": []
+    "maxScore": 27,
+    "questions": [
+        {
+            "id": "1",
+            "question": "Jaki jest teraz rok?",
+            "questionType": "qraded",
+            "maxPoints": 1,
+            "imagePath": null
+        },
+        {
+            "id": "2",
+            "question": "Jaka jest teraz pora roku?",
+            "questionType": "qraded",
+            "maxPoints": 1,
+            "imagePath": null
+        },
+        {
+            "id": "3",
+            "question": "Jaki jest teraz miesiąc?",
+            "questionType": "qraded",
+            "maxPoints": 1,
+            "imagePath": null
+        },
+        {
+            "id": "4",
+            "question": "Jaka jest dzisiejsza data (którego dzisiaj mamy)?",
+            "questionType": "qraded",
+            "maxPoints": 1,
+            "imagePath": null
+        },
+        {
+            "id": "5",
+            "question": "Jaki jest dzisiaj dzień tygodnia?",
+            "questionType": "qraded",
+            "maxPoints": 1,
+            "imagePath": null
+        },
+        {
+            "id": "6",
+            "question": "W jakim kraju się znajdujemy?",
+            "questionType": "qraded",
+            "maxPoints": 1,
+            "imagePath": null
+        },
+        {
+            "id": "7",
+            "question": "W jakim województwie się znajdujemy?",
+            "questionType": "qraded",
+            "maxPoints": 1,
+            "imagePath": null
+        },
+        {
+            "id": "8",
+            "question": "W jakim mieście się teraz znajdujemy?",
+            "questionType": "qraded",
+            "maxPoints": 1,
+            "imagePath": null
+        },
+        {
+            "id": "9",
+            "question": "Jak nazywa się miejsce, w którym się teraz znajdujemy?",
+            "questionType": "qraded",
+            "maxPoints": 1,
+            "imagePath": null
+        },
+        {
+            "id": "10",
+            "question": "Na którym piętrze się obecnie znajdujemy?",
+            "questionType": "qraded",
+            "maxPoints": 1,
+            "imagePath": null
+        },
+        {
+            "id": "11",
+            "question": "Wymienię teraz trzy słowa. Kiedy skończę, proszę, aby je Pan/Pani powtórzył(a). Proszę je zapamiętać, bo zapytam o nie powtórnie za kilka minut. (KOZA, GROSZ, ŁAWKA)",
+            "questionType": "qraded",
+            "maxPoints": 3,
+            "imagePath": null
+        },
+        {
+            "id": "12",
+            "question": "Proszę odejmować kolejno od 100 po 7, aż powiem stop (93, 86, 79, 72, 65)",
+            "questionType": "qraded",
+            "maxPoints": 5,
+            "imagePath": null
+        },
+        {
+            "id": "13",
+            "question": "Proszę wymienić trzy słowa, które Pan(i) miał(a) wcześniej zapamiętać. (KOZA, GROSZ, ŁAWKA)",
+            "questionType": "qraded",
+            "maxPoints": 3,
+            "imagePath": null
+        },
+        {
+            "id": "14",
+            "question": "Prosimy o nazwanie dwóch przedmiotów, które kolejno pokazujemy badanemu (ołówek, zegarek).",
+            "questionType": "qraded",
+            "maxPoints": 2,
+            "imagePath": null
+        },
+        {
+            "id": "15",
+            "question": "Proszę dosłownie powtórzyć następujące zdanie: (bez jeżeli ani lub)",
+            "questionType": "qraded",
+            "maxPoints": 1,
+            "imagePath": null
+        },
+        {
+            "id": "16",
+            "question": "a) Proszę uważnie posłuchać treści całego polecenia, a następnie wykonać to polecenie. (1. proszę wziąć kartkę do lewej/prawej ręki 2. złożyć ją oburącz na połowę 3. i położyć ją na kolana)",
+            "questionType": "qraded",
+            "maxPoints": 3,
+            "imagePath": null
+        }, 
+        {
+            "id": "17",
+            "question": "b) Pokazujemy badanemu tekst polecenia zamieszczony na okładce: „Proszę zamknąć oczy”. Proszę przeczytać to polecenie i je wykonać",
+            "questionType": "qraded",
+            "maxPoints": 1,
+            "imagePath": null
+        },
+        {
+            "id": "18",
+            "question": "Dajemy osobie badanej czystą kartkę papieru i prosimy o napisanie dowolnego zdania. Proszę napisać na tej kartce jakieś dowolne zdanie",
+            "questionType": "qraded",
+            "maxPoints": 1,
+            "imagePath": null
+        },
+        {
+            "id": "19",
+            "question": "Proszę przerysować ten rysunek tak dokładnie, jak tylko jest to możliwe",
+            "questionType": "qraded",
+            "maxPoints": 1,
+            "imagePath": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/InterlockingPentagons.svg/1200px-InterlockingPentagons.svg.png"
+        }   
+    ]
 }
