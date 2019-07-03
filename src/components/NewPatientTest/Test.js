@@ -1,15 +1,29 @@
 import React from 'react';
-import { View, StyleSheet, } from 'react-native';
-import { Button, Card, Headline, Paragraph, Text, Divider, Subheading, Title, Avatar, IconButton } from 'react-native-paper';
+import { View, StyleSheet, Picker, Platform } from 'react-native';
+import { Button, Card, Headline, Paragraph, Text, Divider, Subheading, Title, Avatar, IconButton, TextInput } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import PropTypes from 'prop-types';
+import TestQuestion from './TestQuestion';
+import YesNoActions from './YesNoActions';
+import YesSometimesNoActions from './YesSometimesNoActions';
+import db from './../../firebase';
+import GradedActions from './GradedActions';
+import GradedTestQuestion from './GradedTestQuestion';
+import { calculateTestResult } from './functions';
+import TestResultView from './TestResultView';
 
 class Test extends React.Component {
     constructor (props) {
         super(props)
         this.state = {
-            answers: [],
+            userGroups: null,
+            userGroup: null,
+            answers: {},
             activeQuestion: null,
+            testCompleted: false,
+            gradeForQuestion: 0,
+            testScore: 0,
+            scoreDescription: null
         }
     }
 
@@ -17,73 +31,200 @@ class Test extends React.Component {
         this.setState({activeQuestion: this.props.test.questions.find(question => question.id === questionId)});
     }
 
-    handleYesAnswer = () => {
+    discardResult = () => {
+        this.props.replace('PatientTest', { patientId: this.props.patientId, testId: this.props.test.testId });
+    }
+
+    saveResult = () => {
+        db.patients
+            .addPatientTest(this.props.test.testId, this.props.patientId, this.state.userGroup, this.state.testScore, this.state.scoreDescription)
+            .then(() => {
+                this.props.replace('PatientTest', { patientId: this.props.patientId, testId: this.props.test.testId });
+            });
+    }
+
+    addAnswer = (answer) => {
+        const { id } = this.state.activeQuestion;
+        const newAnswers = {
+            ...this.state.answers,
+            [id]: {
+                id,
+                answer
+            }
+        }
+
         this.setState({
-            answers: [...this.state.answers, {id: this.state.activeQuestion.id, answer: 'yes'}],
-            activeQuestion: this.props.test.questions.find(question => question.id === String(parseInt(this.state.activeQuestion.id, 10) + 1))});
+            answers: newAnswers,
+            activeQuestion: this.props.test.questions.find(question => question.id === String(parseInt(this.state.activeQuestion.id, 10) + 1)),
+        }, () => this.checkAnswers());
+    }
+
+    handleYesAnswer = () => {
+        this.addAnswer('yes');
+    }
+
+    handleSometimesAnswer = () => {
+        this.addAnswer('sometimes');
     }
 
     handleNoAnswer = () => {
-        this.setState({
-            answers: [...this.state.answers, {id: this.state.activeQuestion.id, answer: 'no'}],
-            activeQuestion: this.props.test.questions.find(question => question.id === String(parseInt(this.state.activeQuestion.id, 10) + 1))});
+        this.addAnswer('no');
     }
 
+    handleConfirm = () => {
+        this.addAnswer(this.state.gradeForQuestion);
+    }
+
+    checkAnswers = () => {
+        if (Object.keys(this.state.answers).length === this.props.test.questions.length) {
+            // var testScore = calculateTestResult(this.props.test.testId, Object.values(this.state.answers), this.props.test.testId === '3' ? { age: this.state.age, educationDuration: this.state.educationDuration } : null)
+
+            const { score, description } = calculateTestResult(this.props.test.testId, Object.values(this.state.answers), this.props.test.testId === '3' ? { age: this.state.age, educationDuration: this.state.educationDuration } : null);
+            this.setState({
+                testCompleted: true,
+                testScore: score,
+                scoreDescription: description
+            });
+        }
+        this.updateQuestionGrade(0);
+
+    }
+
+    updateQuestionGrade = (newGrade) => {
+        this.setState({
+            gradeForQuestion: newGrade
+        })
+    }
+
+    onChangeAge = (age) => {
+        const ageNumber = Number(age);
+        this.setState({ age: ageNumber === 0 ? '' : String(ageNumber > 120 ? Math.floor(ageNumber / 10) : ageNumber) });
+        this.setState((prevState) => ({ age: ageNumber === 0 ? '' : String(ageNumber > 120 ? prevState.age : ageNumber) }));
+    }
+
+    onChangeEducationDuration = (educationDuration) => {
+        const educationDurationNumber = Number(educationDuration);
+        this.setState((prevState) => ({ educationDuration: educationDurationNumber === 0 ? '' : String(educationDurationNumber > 12 ? prevState.educationDuration : educationDurationNumber) }));
+    }
+
+    async componentDidMount() {
+        const userGroups = await db.patients.getUserGroups();
+        this.setState({ userGroups, userGroup: userGroups[0] });
+    }
 
     render() {
         return (
             <View style={styles.view}>
                 <Card style={{ flex: 1 }}>
                     <Card.Title title={this.props.test.title} titleStyle={styles.title} subtitle={this.props.test.name} subtitleStyle={styles.label}/>
-                    <Card.Content style={{ flex: 1 }}>
-                        {this.state.activeQuestion && (
-                            <Card style={styles.examination}>
-                            <Card.Title
-                                style={styles.titleNav}
-                                title={'Pytanie ' + `${this.state.activeQuestion.id}`}
-                                titleStyle={styles.examinationName}
-                                left={() => <IconButton icon="arrow-back" size={25} />}
-                                right={() => <IconButton icon="arrow-forward" size={25} />}
-                            />
-                            <Card.Content style={{ flex: 1 }}>
-                                <View style={styles.labelValue}>
-                                    <Text style={styles.label}>{this.state.activeQuestion.question}</Text>
-                                </View>
-                            </Card.Content>
-                            <Card.Actions>
-                            <Button
-                                mode="contained"
-                                style={styles.yesButton}
-                                onPress={() => this.handleYesAnswer()}
-                                dark={true}
-                                color="green"
-                            >
-                                Tak
-                            </Button>
-                            <Button
-                                mode="contained"
-                                style={styles.noButton}
-                                onPress={() => this.handleNoAnswer()}
-                                dark={true}
-                                color="brown"
-                           >
-                                Nie
-                            </Button>
-                            </Card.Actions>
-                        </Card>
+                    <Card.Content style={styles.cardContent}>
+                        {!this.state.activeQuestion && this.state.userGroups && !this.state.testCompleted && (
+                            <View style={styles.groupPickerWrapper}>
+                                <Text style={styles.groupPickerLabel}>Wybierz grupę dostępu</Text>
+                                <Picker
+                                    selectedValue={this.state.userGroup}
+                                    style={styles.groupPicker}
+                                    onValueChange={(userGroup) => this.setState({ userGroup })}
+                                >
+                                    {this.state.userGroups.map((userGroup) => (
+                                        <Picker.Item key={userGroup} label={userGroup} value={userGroup} />
+                                    ))}
+                                </Picker>
+                                {this.props.test.testId === '3' && (
+                                    <>
+                                    <TextInput
+                                        label='Wiek pacjenta'
+                                        keyboardType={Platform.OS === 'ios' ? "number-pad" : "numeric"}
+                                        value={this.state.age}
+                                        onChangeText={this.onChangeAge}
+                                        style={styles.numberInput}
+                                        returnKeyType='done'
+                                    />
+                                    <TextInput
+                                        label='Długość edukacji (lata)'
+                                        keyboardType={Platform.OS === 'ios' ? "number-pad" : "numeric"}
+                                        value={this.state.educationDuration}
+                                        onChangeText={this.onChangeEducationDuration}
+                                        style={styles.numberInput}
+                                        returnKeyType='done'
+                                    />
+                                    </>
+                                )}
+                            </View>
                         )}
-
+                        {this.state.activeQuestion && this.state.activeQuestion.questionType !== "qraded" && (
+                            <TestQuestion
+                                questions={this.props.test.questions}
+                                activeQuestion={this.state.activeQuestion}
+                                setActiveQuestion={(activeQuestion) => this.setState({ activeQuestion })}
+                            />
+                        )}
+                        {this.state.activeQuestion && this.state.activeQuestion.questionType === "qraded" && (
+                            <GradedTestQuestion
+                            // handleYesAnswer={this.handleYesAnswer}
+                            // handleNoAnswer={this.handleNoAnswer}
+                            activeQuestion={this.state.activeQuestion}
+                            updateQuestionGrade={(newGrade) => this.updateQuestionGrade(newGrade)}
+                            grade={this.state.gradeForQuestion}
+                            />
+                        )}
+                         {!this.state.activeQuestion && this.state.testCompleted && (
+                            <TestResultView
+                                testScore={this.state.testScore}
+                                maxScore={this.props.test.maxScore}
+                                testDescription={this.state.scoreDescription}
+                            />
+                         )}
                     </Card.Content>
                     <Card.Actions>
-                        {!this.state.activeQuestion && (
+                        {!this.state.activeQuestion && !this.state.testCompleted && (
                             <Button
                                 mode="contained"
+                                disabled={this.props.test.testId === '3' && (!this.state.age || !this.state.educationDuration)}
                                 style={styles.finishButton}
                                 onPress={() => this.setActiveQuestion("1")}
                                 dark={true}
                             >
-                                Rozpocznij test
+                                Wykonaj test
                             </Button>
+                        )}
+                        {!this.state.activeQuestion && this.state.testCompleted && (
+                        <>
+                            <Button
+                                mode="contained"
+                                style={styles.yesButton}
+                                onPress={() => this.discardResult()}
+                                dark={true}
+                            >
+                                Odrzuć wynik
+                            </Button>
+                            <Button
+                                mode="contained"
+                                style={styles.noButton}
+                                onPress={() => this.saveResult()}
+                                dark={true}
+                            >
+                                Zapisz wynik
+                            </Button>
+                        </>
+                        )}
+                        {this.state.activeQuestion && this.state.activeQuestion.questionType === "yes-no" && (
+                            <YesNoActions
+                            handleYesAnswer={this.handleYesAnswer}
+                            handleNoAnswer={this.handleNoAnswer}
+                            />
+                        )}
+                        {this.state.activeQuestion && this.state.activeQuestion.questionType === "yes-sometimes-no" && (
+                            <YesSometimesNoActions
+                            handleYesAnswer={this.handleYesAnswer}
+                            handleSometimesAnswer={this.handleSometimesAnswer}
+                            handleNoAnswer={this.handleNoAnswer}
+                            />
+                        )}
+                        {this.state.activeQuestion && this.state.activeQuestion.questionType === "qraded" && (
+                            <GradedActions
+                            handleConfirm={this.handleConfirm}
+                            />
                         )}
                     </Card.Actions>
                 </Card>
@@ -97,55 +238,24 @@ Test.propTypes = {
         title: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
         questions: PropTypes.array.isRequired,
-    })
+    }),
+    patientId: PropTypes.string.isRequired
 };
 
 const styles = StyleSheet.create({
-    cardActions: {
-        justifyContent: 'center'
-    },
-    examination: {
-        display: 'flex',
-        flex: 1,
+    view: {
+        height: '100%'
     },
     titleNav: {
         paddingRight: 16,
-    },
-    examinationName: {
-        textAlign: 'center',
-    },
-    value: {
-        fontSize: 15,
-    },
-    view: {
-        height: '100%'
     },
     title: {
         fontSize: 22,
         marginTop:10
     },
-    logo: {
+    cardContent: {
         flex: 1,
-        // display: 'flex',
-        flexDirection: 'row',
-
-        // justifyContent: 'center'
-    },
-    cardTitleStyle: {
-        textAlign: 'center'
-    },
-    card: {
-        flex: 1,
-        marginTop: 40,
-        marginRight: 40,
-        marginLeft: 40,
-        marginBottom: 30,
-        justifyContent: 'center',
-        alignItems: 'center'
-        // position: 'absolute',
-        // margin: 16,
-        // right: 10,
-        // bottom: 10,
+        alignItems: "center"
     },
     yesButton: {
         flex: 1,
@@ -164,26 +274,39 @@ const styles = StyleSheet.create({
         marginLeft: 3,
     },
     finishButton: {
-        width: '100%',
+        flex: 1,
         paddingTop: 5,
         paddingBottom: 5,
     },
     label: {
         marginTop: 5,
         marginBottom: 15,
-        fontSize: 18,
+        fontSize: 17,
         flexWrap: 'wrap'
     },
-    summaryButtons: {
-        position: 'absolute',
-        bottom: 20,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        width: '100%'
+    navigateButton: {
+        width: '5%',
+        margin: 0,
+        padding: 0
     },
-    summaryButton: {
-        margin: 5,
-        padding: 3
+    groupPicker: {
+        height: 200,
+        width: '80%',
+        // fontSize: 16
+    },
+    groupPickerLabel: {
+        fontSize: 20,
+    },
+    groupPickerWrapper: {
+        marginTop: 20,
+        width: '100%',
+        height: 80,
+        textAlign: 'left',
+        alignItems: 'center'
+    },
+    numberInput: {
+        width: '80%',
+        marginTop: 10
     }
 });
 
