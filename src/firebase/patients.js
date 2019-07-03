@@ -15,7 +15,7 @@ function getUserGroups() {
             .once('value', (snapshot) => {
                 if (snapshot.exists()) {
                     const currentUserInfo = new User(Object.values(snapshot.val())[0]);
-                    resolve(currentUserInfo.groups);
+                    resolve(currentUserInfo.groups.map(String));
                 }
                 else {
                     resolve(null);
@@ -122,4 +122,4 @@ function addPatientTest(testId, patientId, group, score, description) {
         .push(newTestResult);
 }
 
-export { isUserAuthorized, getPatients, getPatientLastResults, getPatientTestResults, addPatient, checkIfPatientExists, addPatientTest };
+export { isUserAuthorized, getUserGroups, getPatients, getPatientLastResults, getPatientTestResults, addPatient, checkIfPatientExists, addPatientTest };
