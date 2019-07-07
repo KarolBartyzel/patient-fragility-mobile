@@ -12,16 +12,30 @@ class GradedTestQuestion extends React.Component {
         }
     }
 
+    getActualIndex = () => {
+        return this.props.questions.findIndex((question) => question.id === this.props.activeQuestion.id);
+    }
+
+    handleGoToPrevious = () => {
+        const actualIndex = this.getActualIndex();
+        this.props.setActiveQuestion(this.props.questions[actualIndex - 1]);
+    }
+
+    handleGoToNext = () => {
+        const actualIndex = this.getActualIndex();
+        this.props.setActiveQuestion(this.props.questions[actualIndex + 1]);
+    }
+
     render() {
         return (
             <View style={styles.outerView}>
                 <View style={styles.view}>
                 <View style={styles.cardContentView}>
-                    <IconButton icon="navigate-before" style={styles.navigateButton}/>
+                    <IconButton icon="navigate-before" style={styles.navigateButton} disabled={this.getActualIndex() === 0} onPress={this.handleGoToPrevious} />
                     <Headline 
                     style={styles.title}>{'Pytanie ' + `${this.props.activeQuestion.id}`}
                     </Headline>
-                    <IconButton icon="navigate-next" style={styles.navigateButton} />
+                    <IconButton icon="navigate-next" style={styles.navigateButton} disabled={this.getActualIndex() === this.props.questions.length - 1} onPress={this.handleGoToNext} />
                 </View>
                 <Text style={styles.label}>{this.props.activeQuestion.question}</Text>
                 {this.props.activeQuestion.imagePath && (

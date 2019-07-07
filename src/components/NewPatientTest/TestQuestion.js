@@ -34,10 +34,10 @@ class TestQuestion extends React.Component {
                     </Headline>
                     <IconButton icon="navigate-next" style={styles.navigateButton} disabled={this.getActualIndex() === this.props.questions.length - 1} onPress={this.handleGoToNext} />
                 </View>
-                <Text style={styles.label}>{this.props.activeQuestion.question}</Text>
+                <Text style={styles.label} adjustsFontSizeToFit={true}>{this.props.activeQuestion.question}</Text>
                 {this.props.activeQuestion.imagePath && (
                     <Image
-                        style={{width: "50%", height: "40%", marginTop: 5}}
+                        style={{width: "50%", height: "30%", marginTop: 5}}
                         source={{uri: this.props.activeQuestion.imagePath}}
                         resizeMode='contain'
                     />
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
     },
     view: {
-        height: '100%',
+        height: '85%',
         width: '100%', 
         alignItems: 'center',
         justifyContent: 'flex-start'
@@ -75,7 +75,9 @@ const styles = StyleSheet.create({
     },
     label: {
         marginTop: 15,
-        fontSize: 20,
+        height: '60%',
+        fontSize: this.props.activeQuestion.question.length > 200 ? 15 : 20,
+        // height: 100,
         flexWrap: 'wrap',
         textAlign: 'center'
     },

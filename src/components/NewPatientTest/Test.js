@@ -161,11 +161,11 @@ class Test extends React.Component {
                         )}
                         {this.state.activeQuestion && this.state.activeQuestion.questionType === "qraded" && (
                             <GradedTestQuestion
-                            // handleYesAnswer={this.handleYesAnswer}
-                            // handleNoAnswer={this.handleNoAnswer}
-                            activeQuestion={this.state.activeQuestion}
-                            updateQuestionGrade={(newGrade) => this.updateQuestionGrade(newGrade)}
-                            grade={this.state.gradeForQuestion}
+                                questions={this.props.test.questions}
+                                activeQuestion={this.state.activeQuestion}
+                                setActiveQuestion={(activeQuestion) => this.setState({ activeQuestion })}
+                                updateQuestionGrade={(newGrade) => this.updateQuestionGrade(newGrade)}
+                                grade={this.state.gradeForQuestion}
                             />
                         )}
                          {!this.state.activeQuestion && this.state.testCompleted && (
