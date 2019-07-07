@@ -15,7 +15,12 @@ function getUserGroups() {
             .once('value', (snapshot) => {
                 if (snapshot.exists()) {
                     const currentUserInfo = new User(Object.values(snapshot.val())[0]);
-                    resolve(currentUserInfo.groups.map(String));
+                    if (currentUserInfo.groups) {
+                        resolve(currentUserInfo.groups.map(String));
+                    }
+                    else {
+                        resolve(null);
+                    }
                 }
                 else {
                     resolve(null);

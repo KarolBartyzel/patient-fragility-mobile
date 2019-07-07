@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Patient Fragility",
-    "slug": "PatientFragility",
+    "name": "Patient Fragility Calculator",
+    "slug": "PatientFragilityCalculator",
     "privacy": "public",
     "sdkVersion": "32.0.0",
     "platforms": [
@@ -11,19 +11,15 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "splash": {
-      "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
     "assetBundlePatterns": [
       "**/*"
     ],
-    "ios": {
-      "supportsTablet": true
+    "android": {
+      "package": "calculator.fragility.patient",
+      "permissions": []
     }
   }
 }
