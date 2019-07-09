@@ -28,7 +28,7 @@ class PatientTest extends React.Component {
             <Card style={styles.patientTestCard}>
                 <Card.Title
                     title={`${testDefinition.title} - wyniki`}
-                    right={(props) => <IconButton {...props} icon="add" size={30} onPress={() => { this.props.navigate('NewPatientTest', { id: this.props.patientId, testId: this.props.testId }); }} /> }
+                    right={(props) => <IconButton {...props} icon="add" size={30} onPress={() => { this.props.navigate('NewPatientTest', { patientId: this.props.patientId, testId: this.props.testId }); }} /> }
                 />
 
                 {!testResults && (
