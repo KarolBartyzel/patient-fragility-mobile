@@ -14,21 +14,14 @@ class TestResultView extends React.Component {
         return (
             <View style={styles.view}>
                 <View style={styles.cardContentView}>
-                    {/* <IconButton icon="navigate-before" style={styles.navigateButton}/> */}
                     <Headline 
                     style={styles.title}>{'Uzyskany wynik'}
                     </Headline>
-                    {/* <IconButton icon="navigate-next" style={styles.navigateButton} /> */}
                 </View>
-                <Text style={styles.label}>{'Uzyskane punkty: ' + `${this.props.testScore}` + '/'+ `${this.props.maxScore}`}</Text>
+                {this.props.maxScore && (
+                    <Text style={styles.label}>{'Uzyskane punkty: ' + `${this.props.testScore}` + '/'+ `${this.props.maxScore}`}</Text> 
+                )}
                 <Text style={styles.label}>{'Diagnoza: '+ `${this.props.testDescription}`}</Text>
-                {/* {this.props.activeQuestion.imagePath && (
-                    <Image
-                        style={{width: "50%", height: "40%", marginTop: 5}}
-                        source={{uri: this.props.activeQuestion.imagePath}}
-                        resizeMode='contain'
-                    />
-                )} */}
             </View>
         );
     }

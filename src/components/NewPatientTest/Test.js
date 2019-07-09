@@ -10,7 +10,7 @@ import db from './../../firebase';
 import GradedActions from './GradedActions';
 import { calculateTestResult } from './functions';
 import TestResultView from './TestResultView';
-import NumericInput from 'react-native-numeric-input';
+import SelectActions from './SelectActions';
 
 class Test extends React.Component {
     constructor (props) {
@@ -84,14 +84,18 @@ class Test extends React.Component {
         this.addAnswer(this.state.gradeForQuestion);
     }
 
+    handleSelect = () => {
+        this.addAnswer(this.state.activeQuestion.id);
+    }
+
     checkAnswers = () => {
-        console.log("CHECK ANS")
-        if (Object.keys(this.state.answers).length === this.props.test.questions.length) {
+        if (Object.keys(this.state.answers).length === this.props.test.questions.length || this.props.test.questions['1'].questionType === 'select') {
             const { score, description } = calculateTestResult(this.props.test.testId, Object.values(this.state.answers), this.props.test.testId === '3' ? { age: this.state.age, educationDuration: this.state.educationDuration } : null);
             this.setState({
                 testCompleted: true,
                 testScore: score,
-                scoreDescription: description
+                scoreDescription: description,
+                activeQuestion: null
             });
         } else if (!this.state.activeQuestion) { 
             this.activateNextSkippedQuestion();
@@ -172,6 +176,9 @@ class Test extends React.Component {
                                     />
                                     </>
                                 )}
+                                {this.props.test.testId === '2' && (
+                                    <Text style={{fontSize: 17, textAlign: 'center'}}>Aby wypełnić test, wybierz jeden, najbardziej pasujący opis pacjenta</Text>
+                                )}
                             </View>
                         )}
                         {this.state.activeQuestion && (
@@ -251,6 +258,11 @@ class Test extends React.Component {
                         {this.state.activeQuestion && this.state.activeQuestion.questionType === "qraded" && (
                             <GradedActions
                             handleConfirm={this.handleConfirm}
+                            />
+                        )}
+                         {this.state.activeQuestion && this.state.activeQuestion.questionType === "select" && (
+                            <SelectActions
+                            handleSelect={this.handleSelect}
                             />
                         )}
                     </Card.Actions>
