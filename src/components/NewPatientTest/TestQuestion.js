@@ -26,7 +26,7 @@ class TestQuestion extends React.Component {
 
     render() {
         return (
-            <View style={styles.view}>
+            <View style={[styles.view, this.props.activeQuestion.questionType === 'qraded' ? styles.viewHeightShort : styles.viewHeightTall]}>
                 <View style={styles.cardContentView}>
                     <IconButton icon="navigate-before" style={styles.navigateButton} disabled={this.getActualIndex() === 0} onPress={this.handleGoToPrevious} />
                     <Headline 
@@ -38,7 +38,7 @@ class TestQuestion extends React.Component {
                     adjustsFontSizeToFit={true}>{this.props.activeQuestion.question}</Text>
                 {this.props.activeQuestion.imagePath && (
                     <Image
-                        style={{width: "50%", height: "30%", marginTop: 5}}
+                        style={{width: "70%", height: "45%", marginTop: 5}}
                         source={{uri: this.props.activeQuestion.imagePath}}
                         resizeMode='contain'
                     />
@@ -64,10 +64,15 @@ const styles = StyleSheet.create({
         fontSize: 15,
     },
     view: {
-        height: '75%',
         width: '100%', 
         alignItems: 'center',
         justifyContent: 'flex-start'
+    },
+    viewHeightShort: {
+        height: '60%',
+    },
+    viewHeightTall: {
+        height: '75%',
     },
     title: {
         fontSize: 25,
