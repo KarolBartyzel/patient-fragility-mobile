@@ -17,6 +17,7 @@
     "lodash": "^4.17.11",
     "metro-react-native-babel-preset": "^0.53.1",
     "prop-types": "^15.7.2",
+    "rc-input-number": "^4.4.5",
     "react": "^16.8.6",
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
     "react-native-numeric-input": "^1.8.0",

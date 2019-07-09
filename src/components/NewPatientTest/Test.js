@@ -8,9 +8,9 @@ import YesNoActions from './YesNoActions';
 import YesSometimesNoActions from './YesSometimesNoActions';
 import db from './../../firebase';
 import GradedActions from './GradedActions';
-import GradedTestQuestion from './GradedTestQuestion';
 import { calculateTestResult } from './functions';
 import TestResultView from './TestResultView';
+import NumericInput from 'react-native-numeric-input';
 
 class Test extends React.Component {
     constructor (props) {
@@ -23,7 +23,9 @@ class Test extends React.Component {
             testCompleted: false,
             gradeForQuestion: 0,
             testScore: 0,
-            scoreDescription: null
+            scoreDescription: null,
+            age: '',
+            educationDuration: ''
         }
     }
 
@@ -53,10 +55,17 @@ class Test extends React.Component {
             }
         }
 
-        this.setState({
-            answers: newAnswers,
-            activeQuestion: this.props.test.questions.find(question => question.id === String(parseInt(this.state.activeQuestion.id, 10) + 1)),
-        }, () => this.checkAnswers());
+        if (!Object.keys(newAnswers).includes(String(parseInt(this.state.activeQuestion.id, 10) + 1))) {
+            this.setState({
+                answers: newAnswers,
+                activeQuestion: this.props.test.questions.find(question => question.id === String(parseInt(this.state.activeQuestion.id, 10) + 1)),
+            }, () => this.checkAnswers());
+        } else {
+            this.setState({
+                answers: newAnswers,
+                activeQuestion: null
+            }, () => this.checkAnswers());
+        }
     }
 
     handleYesAnswer = () => {
@@ -76,24 +85,37 @@ class Test extends React.Component {
     }
 
     checkAnswers = () => {
+        console.log("CHECK ANS")
         if (Object.keys(this.state.answers).length === this.props.test.questions.length) {
-            // var testScore = calculateTestResult(this.props.test.testId, Object.values(this.state.answers), this.props.test.testId === '3' ? { age: this.state.age, educationDuration: this.state.educationDuration } : null)
-
             const { score, description } = calculateTestResult(this.props.test.testId, Object.values(this.state.answers), this.props.test.testId === '3' ? { age: this.state.age, educationDuration: this.state.educationDuration } : null);
             this.setState({
                 testCompleted: true,
                 testScore: score,
                 scoreDescription: description
             });
+        } else if (!this.state.activeQuestion) { 
+            this.activateNextSkippedQuestion();
         }
-        this.updateQuestionGrade(0);
+        this.updateQuestionGrade('0');
 
     }
 
+    activateNextSkippedQuestion = () => {
+        const skippedQuestionsIds = this.props.test.questions.map((question) => question.id).filter((questionId) => !Object.keys(this.state.answers).includes(questionId)).sort();
+        this.setState({activeQuestion: this.props.test.questions.find(question => question.id === skippedQuestionsIds[0])});
+    }
+
     updateQuestionGrade = (newGrade) => {
-        this.setState({
-            gradeForQuestion: newGrade
-        })
+        const newGradeNumber = Number(newGrade);
+        if (this.state.activeQuestion) {
+            this.setState((prevState) => ({
+                gradeForQuestion: newGradeNumber >= 0 && newGradeNumber <= this.state.activeQuestion.maxPoints ? newGradeNumber : prevState.gradeForQuestion
+            }))
+        } else {
+            this.setState((prevState) => ({
+                gradeForQuestion: newGradeNumber
+            })) 
+        }
     }
 
     onChangeAge = (age) => {
@@ -104,7 +126,7 @@ class Test extends React.Component {
 
     onChangeEducationDuration = (educationDuration) => {
         const educationDurationNumber = Number(educationDuration);
-        this.setState((prevState) => ({ educationDuration: educationDurationNumber === 0 ? '' : String(educationDurationNumber > 12 ? prevState.educationDuration : educationDurationNumber) }));
+        this.setState((prevState) => ({ educationDuration: educationDurationNumber === 0 ? '' : String(educationDurationNumber > 20 ? prevState.educationDuration : educationDurationNumber) }));
     }
 
     async componentDidMount() {
@@ -152,21 +174,26 @@ class Test extends React.Component {
                                 )}
                             </View>
                         )}
-                        {this.state.activeQuestion && this.state.activeQuestion.questionType !== "qraded" && (
-                            <TestQuestion
-                                questions={this.props.test.questions}
-                                activeQuestion={this.state.activeQuestion}
-                                setActiveQuestion={(activeQuestion) => this.setState({ activeQuestion })}
-                            />
-                        )}
-                        {this.state.activeQuestion && this.state.activeQuestion.questionType === "qraded" && (
-                            <GradedTestQuestion
-                                questions={this.props.test.questions}
-                                activeQuestion={this.state.activeQuestion}
-                                setActiveQuestion={(activeQuestion) => this.setState({ activeQuestion })}
-                                updateQuestionGrade={(newGrade) => this.updateQuestionGrade(newGrade)}
-                                grade={this.state.gradeForQuestion}
-                            />
+                        {this.state.activeQuestion && (
+                            <View style={styles.outerView}>
+                                <TestQuestion
+                                    questions={this.props.test.questions}
+                                    activeQuestion={this.state.activeQuestion}
+                                    setActiveQuestion={(activeQuestion) => this.setState({ activeQuestion })}
+                                />
+                                {this.state.activeQuestion && this.state.activeQuestion.questionType === "qraded" && (
+                                    <View style={styles.inputView}>    
+                                        <TextInput
+                                            label={'Punkty za odpowiedź (0 - ' + `${this.state.activeQuestion.maxPoints}` + ')'}
+                                            keyboardType={Platform.OS === 'ios' ? "number-pad" : "numeric"}
+                                            value={this.state.gradeForQuestion.toString()}
+                                            onChangeText={newGrade => this.updateQuestionGrade(newGrade)}
+                                            style={styles.numberInput}
+                                            returnKeyType='done'
+                                        />
+                                    </View>
+                                )}
+                            </View>
                         )}
                          {!this.state.activeQuestion && this.state.testCompleted && (
                             <TestResultView
@@ -307,7 +334,19 @@ const styles = StyleSheet.create({
     numberInput: {
         width: '80%',
         marginTop: 10
-    }
+    },
+    outerView: {
+        height: '100%',
+        width: '100%', 
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    },
+    inputView: {
+        height: '20%',
+        width: '100%', 
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
 });
 
 export default Test;

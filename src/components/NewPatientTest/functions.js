@@ -31,6 +31,7 @@ function calculateTest3Result(answers, params) {
 
     const score = answers.map(({ answer }) => answer).reduce((sum, value) => sum + value, 0) - 
         Math.round(0.471 * (educationDuration - 12) + 0.31 * (70 - age));
+    console.log("SCORRR "+score+ " :)");
 
     const description = score <= 10 ? 'Otępienie głębokie' 
         : score <= 18 ? 'Otępienie średniego stopnia' 

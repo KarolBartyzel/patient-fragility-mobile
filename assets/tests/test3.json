@@ -2,7 +2,7 @@
     "testId": "3",
     "title": "Ocena Stanu Psychicznego",
     "name": "Krótka Skala Oceny Stanu Psychicznego (MMSE)",
-    "maxScore": 27,
+    "maxScore": 30,
     "questions": [
         {
             "id": "1",
