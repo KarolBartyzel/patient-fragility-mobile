@@ -97,11 +97,10 @@ class Test extends React.Component {
                 scoreDescription: description,
                 activeQuestion: null
             });
-        } else if (!this.state.activeQuestion) { 
+        } else if (!this.state.activeQuestion) {
             this.activateNextSkippedQuestion();
         }
         this.updateQuestionGrade('0');
-
     }
 
     activateNextSkippedQuestion = () => {
@@ -118,7 +117,7 @@ class Test extends React.Component {
         } else {
             this.setState((prevState) => ({
                 gradeForQuestion: newGradeNumber
-            })) 
+            }))
         }
     }
 
@@ -146,16 +145,6 @@ class Test extends React.Component {
                     <Card.Content style={styles.cardContent}>
                         {!this.state.activeQuestion && this.state.userGroups && !this.state.testCompleted && (
                             <View style={styles.groupPickerWrapper}>
-                                <Text style={styles.groupPickerLabel}>Wybierz grupę dostępu</Text>
-                                <Picker
-                                    selectedValue={this.state.userGroup}
-                                    style={styles.groupPicker}
-                                    onValueChange={(userGroup) => this.setState({ userGroup })}
-                                >
-                                    {this.state.userGroups.map((userGroup) => (
-                                        <Picker.Item key={userGroup} label={userGroup} value={userGroup} />
-                                    ))}
-                                </Picker>
                                 {this.props.test.testId === '3' && (
                                     <>
                                     <TextInput
@@ -176,6 +165,16 @@ class Test extends React.Component {
                                     />
                                     </>
                                 )}
+                                <Text style={styles.groupPickerLabel}>Wybierz grupę dostępu</Text>
+                                <Picker
+                                    selectedValue={this.state.userGroup}
+                                    style={styles.groupPicker}
+                                    onValueChange={(userGroup) => this.setState({ userGroup })}
+                                >
+                                    {this.state.userGroups.map((userGroup) => (
+                                        <Picker.Item key={userGroup} label={userGroup} value={userGroup} />
+                                    ))}
+                                </Picker>
                                 {this.props.test.testId === '2' && (
                                     <Text style={{fontSize: 17, textAlign: 'center'}}>Aby wypełnić test, wybierz jeden, najbardziej pasujący opis pacjenta</Text>
                                 )}
@@ -186,10 +185,10 @@ class Test extends React.Component {
                                 <TestQuestion
                                     questions={this.props.test.questions}
                                     activeQuestion={this.state.activeQuestion}
-                                    setActiveQuestion={(activeQuestion) => this.setState({ activeQuestion })}
+                                    setActiveQuestion={(activeQuestion) => { this.setState({ activeQuestion }); this.updateQuestionGrade('0'); }}
                                 />
                                 {this.state.activeQuestion && this.state.activeQuestion.questionType === "qraded" && (
-                                    <View style={styles.inputView}>    
+                                    <View style={styles.inputView}>
                                         <TextInput
                                             label={'Punkty za odpowiedź (0 - ' + `${this.state.activeQuestion.maxPoints}` + ')'}
                                             keyboardType={Platform.OS === 'ios' ? "number-pad" : "numeric"}
@@ -334,6 +333,7 @@ const styles = StyleSheet.create({
         // fontSize: 16
     },
     groupPickerLabel: {
+        marginTop: 10,
         fontSize: 20,
     },
     groupPickerWrapper: {
@@ -349,15 +349,16 @@ const styles = StyleSheet.create({
     },
     outerView: {
         height: '100%',
-        width: '100%', 
+        width: '100%',
         alignItems: 'center',
         justifyContent: 'space-between'
     },
     inputView: {
         height: '20%',
-        width: '100%', 
+        width: '100%',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        marginBottom: 10,
     },
 });
 
