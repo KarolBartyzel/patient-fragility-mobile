@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { KeyboardAvoidingView, Platform } from 'react-native';
 import PropTypes from 'prop-types';
 
 import Test from './Test';
@@ -13,9 +13,12 @@ class NewPatientTest extends React.Component {
 
     render() {
         return (
-            <View>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? "padding" : null}
+                keyboardVerticalOffset={Platform.select({ ios: 64, android: 0 })}
+            >
                 <Test replace={this.props.replace} test={this.testDefinition} patientId={this.props.patientId}/>
-            </View>
+            </KeyboardAvoidingView>
         );
     }
 }
