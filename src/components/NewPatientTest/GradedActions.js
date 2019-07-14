@@ -8,38 +8,40 @@ class GradedActions extends React.Component {
     constructor (props) {
         super(props)
         this.state = {
-            // answers: [],
-            // activeQuestion: null,
         }
     }
 
     render() {
         return (
-            <>    
-            <Button
-                mode="contained"
-                style={styles.confirmButton}
-                onPress={() => this.props.handleConfirm()}
-                dark={true}
-            >
-                Zatwierdź
-            </Button>
+            <> 
+            {Array.from(Array(this.props.maxPoints + 1).keys()).map(Number.call, Number).map((grade) => (
+                <Button
+                    mode="contained"
+                    style={styles.pointsButton}
+                    onPress={() => this.props.handleGrade(grade)}
+                    dark={true}
+                    compact='true'
+                >
+                  {grade}
+                </Button>
+            ))}
             </>
         );
     }
 }
 
 GradedActions.propTypes = {
-    handleConfirm: PropTypes.func.isRequired
+    handleGrade: PropTypes.func.isRequired,
+    maxPoints: PropTypes.number.isRequired
 };
 
 const styles = StyleSheet.create({
-    confirmButton: {
+    pointsButton: {
         flex: 1,
         paddingTop: 5,
-        paddingRight: 5,
         paddingBottom: 5,
-        paddingLeft: 5
+        marginLeft:3,
+        marginRight:3,
     }
 });
 
