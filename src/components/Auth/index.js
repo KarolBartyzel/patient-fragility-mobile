@@ -42,7 +42,7 @@ class Auth extends React.Component {
                                     profilePicture: additionalUserInfo.profile.picture,
                                     createdAt: Date.now(),
                                     lastLoggedInAt: Date.now(),
-                                    groups: []
+                                    accessGroups: []
                                 });
                                 return firebase
                                     .database()

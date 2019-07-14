@@ -5,7 +5,7 @@ class User {
     static FIRST_NAME='firstName';
     static LAST_NAME='lastName';
     static GMAIL='gmail';
-    static GROUPS='groups';
+    static ACCESS_GROUPS='accessGroups';
     static PROFILE_PICTURE='profilePicture';
     static CREATED_AT='createdAt';
     static LAST_LOGGED_IN_AT='lastLoggedInAt';
@@ -14,17 +14,17 @@ class User {
     firstName;
     lastName;
     gmail;
-    groups;
+    accessGroups;
     profilePicture;
     createdAt;
     lastLoggedInAt;
 
-    constructor({ id, firstName, lastName, gmail, groups, profilePicture, createdAt, lastLoggedInAt }) {
+    constructor({ id, firstName, lastName, gmail, accessGroups, profilePicture, createdAt, lastLoggedInAt }) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.gmail = gmail;
-        this.groups = groups;
+        this.accessGroups =accessGroups;
         this.profilePicture = profilePicture;
         this.createdAt = createdAt;
         this.lastLoggedInAt = lastLoggedInAt;
@@ -35,15 +35,18 @@ class Patient {
     static COLLECTION = 'patients';
 
     static ID='id';
+    static GROUP='group';
     static AGE='age';
     static CREATED_AT='createdAt';
 
     id;
+    group;
     age;
     createdAt;
 
-    constructor({ id, age, createdAt }) {
+    constructor({ id, group, age, createdAt }) {
         this.id = id;
+        this.group = group;
         this.age = age;
         this.createdAt = createdAt;
     }

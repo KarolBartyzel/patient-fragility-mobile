@@ -15,8 +15,8 @@ function getUserGroups() {
             .once('value', (snapshot) => {
                 if (snapshot.exists()) {
                     const currentUserInfo = new User(Object.values(snapshot.val())[0]);
-                    if (currentUserInfo.groups) {
-                        resolve(currentUserInfo.groups.map(String));
+                    if (currentUserInfo.accessGroups) {
+                        resolve(currentUserInfo.accessGroups.map(({ group, subgroup }) => ({ group: String(group), subgroup: String(subgroup) })));
                     }
                     else {
                         resolve(null);
@@ -31,7 +31,8 @@ function getUserGroups() {
 
 // Exported
 async function getPatients(patientId) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
+        const userGroups = await getUserGroups();
         const orderedQuery = firebase.database()
             .ref(Patient.COLLECTION)
             .orderByChild(Patient.ID);
@@ -40,7 +41,8 @@ async function getPatients(patientId) {
             .once('value', (snapshot) => {
                 const value = snapshot.val();
                 const patients = value ? Object.values(value).map((rawPatient) => new Patient(rawPatient)) : [];
-                resolve(patients);
+                const filteredPatients = patients.filter((patient) => userGroups.map((userGroup) => userGroup.group).includes(patient.group));
+                resolve(filteredPatients);
             });
     });
 }
@@ -84,7 +86,7 @@ async function getPatientResults(patientId) {
             .equalTo(patientId)
             .once('value', (snapshot) => {
                 const value = snapshot.val();
-                const testResults = value ?  Object.values(value).filter(testResult => userGroups.includes(testResult.group)) : [];
+                const testResults = value ?  Object.values(value).filter(testResult => userGroups.some((accessGroup) => accessGroup.group === testResult.accessGroup.group && accessGroup.subgroup === testResult.accessGroup.subgroup)) : [];
                 resolve(testResults);
             });
     });
@@ -108,7 +110,7 @@ async function getPatientTestResults(patientId, testId) {
 }
 
 // Usage db.patients.addPatientTest(testId, patientId, "1", 15, 'Mała kruchość');
-function addPatientTest(testId, patientId, group, score, description) {
+function addPatientTest(testId, patientId, accessGroup, score, description) {
     const { currentUser } = firebase.auth();
 
     const newTestResult = new TestResult({
@@ -116,7 +118,7 @@ function addPatientTest(testId, patientId, group, score, description) {
         userId: currentUser.uid,
         userName: `${currentUser.displayName} (${currentUser.email})`,
         patientId,
-        group,
+        accessGroup,
         score,
         description,
         date: Date.now()

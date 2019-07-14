@@ -175,9 +175,10 @@ class Test extends React.Component {
                                     style={styles.groupPicker}
                                     onValueChange={(userGroup) => this.setState({ userGroup })}
                                 >
-                                    {this.state.userGroups.map((userGroup) => (
-                                        <Picker.Item key={userGroup} label={userGroup} value={userGroup} />
-                                    ))}
+                                    {this.state.userGroups.map((userGroup) => {
+                                        const label = `${userGroup.subgroup} (${userGroup.group})`;
+                                        return <Picker.Item key={label} label={label} value={userGroup} />;
+                                    })}
                                 </Picker>
                                 {this.props.test.testId === '2' && (
                                     <Text style={{fontSize: 17, textAlign: 'center'}}>Aby wypełnić test, wybierz jeden, najbardziej pasujący opis pacjenta</Text>
