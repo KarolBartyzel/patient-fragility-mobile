@@ -84,6 +84,10 @@ class Test extends React.Component {
         this.addAnswer(this.state.gradeForQuestion);
     }
 
+    handleGrade = (grade) => {
+        this.addAnswer(grade);
+    }
+
     handleSelect = () => {
         this.addAnswer(this.state.activeQuestion.id);
     }
@@ -189,14 +193,14 @@ class Test extends React.Component {
                                 />
                                 {this.state.activeQuestion && this.state.activeQuestion.questionType === "qraded" && (
                                     <View style={styles.inputView}>
-                                        <TextInput
+                                        {/* <TextInput
                                             label={'Punkty za odpowiedź (0 - ' + `${this.state.activeQuestion.maxPoints}` + ')'}
                                             keyboardType={Platform.OS === 'ios' ? "number-pad" : "numeric"}
                                             value={this.state.gradeForQuestion.toString()}
                                             onChangeText={newGrade => this.updateQuestionGrade(newGrade)}
                                             style={styles.numberInput}
                                             returnKeyType='done'
-                                        />
+                                        /> */}
                                     </View>
                                 )}
                             </View>
@@ -256,7 +260,8 @@ class Test extends React.Component {
                         )}
                         {this.state.activeQuestion && this.state.activeQuestion.questionType === "qraded" && (
                             <GradedActions
-                            handleConfirm={this.handleConfirm}
+                                handleGrade={this.handleGrade}
+                                maxPoints={this.state.activeQuestion.maxPoints}
                             />
                         )}
                          {this.state.activeQuestion && this.state.activeQuestion.questionType === "select" && (
