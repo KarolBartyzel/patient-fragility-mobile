@@ -15,8 +15,12 @@ class NewUser extends React.Component {
     handleSendMail() {
         const { currentUser} = firebase.auth();
         const subject = "Prośba o autoryzację";
-        const body = `Proszę o autoryzację aplikacji "Kalkulator Kruchości Pacjenta".\n\nPoniżej załączam dane.\n\nUżytkownik: ${currentUser.displayName}\nEmail: ${currentUser.email}\nDodatkowe dane: ...`;
+        const body = `Proszę o autoryzację użytkownika w aplikacji "Kalkulator Kruchości Pacjenta".\n\nUżytkownik: ${currentUser.displayName}\nEmail: ${currentUser.email}\nSzpital: <SZPITAL>`;
         Linking.openURL(`mailto:${ADMIN_EMAIL}?subject=${subject}&body=${body}`);
+    }
+
+    handleRefresh = () => {
+        this.props.navigate("Auth");
     }
 
     render() {
@@ -28,15 +32,25 @@ class NewUser extends React.Component {
                         subtitle="aby rozpocząć korzystanie z aplikacji"
                     />
 
-                    <Card.Actions>
+                    <Card.Actions style={styles.newUserCardActions}>
                         <Button
                             mode="contained"
-                            contentStyle={styles.sendMailButton}
+                            contentStyle={styles.sendMailButtonContent}
                             onPress={this.handleSendMail}
                             dark={true}
                             icon="email"
                         >
                             Wyślij maila
+                        </Button>
+                        <Button
+                            mode="contained"
+                            style={styles.refreshButton}
+                            contentStyle={styles.refreshButtonContent}
+                            onPress={this.handleRefresh}
+                            dark={true}
+                            icon="refresh"
+                        >
+                            Odśwież
                         </Button>
                     </Card.Actions>
                 </Card>
@@ -56,13 +70,26 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flex: 1
     },
-    sendMailButton: {
+    newUserCardActions: {
+        flexDirection: 'column'
+    },
+    sendMailButtonContent: {
         width: 300,
         paddingLeft: 20,
         paddingRight: 20,
         paddingTop: 10,
         paddingBottom: 10
     },
+    refreshButton: {
+        marginTop: 10,
+    },
+    refreshButtonContent: {
+        width: 200,
+        paddingLeft: 10,
+        paddingRight: 10,
+        paddingTop: 5,
+        paddingBottom: 5
+    }
 });
 
 export default NewUser;
