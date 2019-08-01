@@ -1,4 +1,4 @@
-{
+export default {
     "testId": "5",
     "title": "Wskaźnik kruchości Tilburga",
     "name": "Wskaźnik kruchości Tilburga",
@@ -109,5 +109,34 @@
             "maxPoints": null,
             "imagePath": null
         }
-    ]
+    ],
+    "findScore": function findScore(answers, params) {
+        const points = [
+            ['no'],
+            ['yes'],
+            ['yes'],
+            ['yes'],
+            ['yes'],
+            ['yes'],
+            ['yes'],
+            ['yes'],
+
+            ['yes'],
+            ['yes', 'sometimes'],
+            ['yes', 'sometimes'],
+            ['no'],
+
+            ['yes'],
+            ['yes', 'sometimes'],
+            ['no'],
+        ];
+
+        return answers.filter((result, index) => points[index].includes(result.answer)).length;
+    },
+    "findDescription": function findDescription(answers, score) {
+        return score < 5 ? 'Brak kruchości'
+            : score < 9 ? 'Łagodna kruchość'
+            : score < 12 ? 'Umiarkowana kruchość'
+            : 'Ciężka kruchość';
+    }
 }

@@ -1,16 +1,15 @@
 import React from 'react';
 import { View, StyleSheet, Picker, Platform } from 'react-native';
-import { Button, Card, Headline, Paragraph, Text, Divider, Subheading, Title, Avatar, IconButton, TextInput } from 'react-native-paper';
-import { Ionicons } from '@expo/vector-icons';
+import { Button, Card, Text, TextInput } from 'react-native-paper';
 import PropTypes from 'prop-types';
-import TestQuestion from './TestQuestion';
-import YesNoActions from './YesNoActions';
-import YesSometimesNoActions from './YesSometimesNoActions';
+
 import db from './../../firebase';
-import GradedActions from './GradedActions';
-import { calculateTestResult } from './functions';
+import testsDefinitions from './../../../assets/tests';
+
+import Actions from './Actions';
+
+import TestQuestion from './TestQuestion';
 import TestResultView from './TestResultView';
-import SelectActions from './SelectActions';
 
 class Test extends React.Component {
     constructor (props) {
@@ -68,33 +67,15 @@ class Test extends React.Component {
         }
     }
 
-    handleYesAnswer = () => {
-        this.addAnswer('yes');
-    }
-
-    handleSometimesAnswer = () => {
-        this.addAnswer('sometimes');
-    }
-
-    handleNoAnswer = () => {
-        this.addAnswer('no');
-    }
-
     handleConfirm = () => {
         this.addAnswer(this.state.gradeForQuestion);
     }
 
-    handleGrade = (grade) => {
-        this.addAnswer(grade);
-    }
-
-    handleSelect = () => {
-        this.addAnswer(this.state.activeQuestion.id);
-    }
-
     checkAnswers = () => {
         if (Object.keys(this.state.answers).length === this.props.test.questions.length || this.props.test.questions['1'].questionType === 'select') {
-            const { score, description } = calculateTestResult(this.props.test.testId, Object.values(this.state.answers), this.props.test.testId === '3' ? { age: this.state.age, educationDuration: this.state.educationDuration } : null);
+            const { findScore, findDescription } = testsDefinitions.find(({ testId }) => testId === this.props.test.testId);
+            const score = findScore(Object.values(this.state.answers), this.props.test.testId === '3' ? { age: this.state.age, educationDuration: this.state.educationDuration } : null);
+            const description = findDescription(Object.values(this.state.answers), score);
             this.setState({
                 testCompleted: true,
                 testScore: score,
@@ -192,7 +173,7 @@ class Test extends React.Component {
                                     activeQuestion={this.state.activeQuestion}
                                     setActiveQuestion={(activeQuestion) => { this.setState({ activeQuestion }); this.updateQuestionGrade('0'); }}
                                 />
-                                {this.state.activeQuestion && this.state.activeQuestion.questionType === "qraded" && (
+                                {this.state.activeQuestion && this.state.activeQuestion.questionType === "graded" && (
                                     <View style={styles.inputView}>
                                         {/* <TextInput
                                             label={'Punkty za odpowiedź (0 - ' + `${this.state.activeQuestion.maxPoints}` + ')'}
@@ -219,7 +200,8 @@ class Test extends React.Component {
                             <Button
                                 mode="contained"
                                 disabled={this.props.test.testId === '3' && (!this.state.age || !this.state.educationDuration)}
-                                style={styles.finishButton}
+                                style={styles.button}
+                                contentStyle={styles.buttonContent}
                                 onPress={() => this.setActiveQuestion("1")}
                                 dark={true}
                             >
@@ -230,7 +212,8 @@ class Test extends React.Component {
                         <>
                             <Button
                                 mode="contained"
-                                style={styles.yesButton}
+                                style={styles.button}
+                                contentStyle={styles.buttonContent}
                                 onPress={() => this.discardResult()}
                                 dark={true}
                             >
@@ -238,7 +221,8 @@ class Test extends React.Component {
                             </Button>
                             <Button
                                 mode="contained"
-                                style={styles.noButton}
+                                style={styles.button}
+                                contentStyle={styles.buttonContent}
                                 onPress={() => this.saveResult()}
                                 dark={true}
                             >
@@ -246,30 +230,10 @@ class Test extends React.Component {
                             </Button>
                         </>
                         )}
-                        {this.state.activeQuestion && this.state.activeQuestion.questionType === "yes-no" && (
-                            <YesNoActions
-                            handleYesAnswer={this.handleYesAnswer}
-                            handleNoAnswer={this.handleNoAnswer}
-                            />
-                        )}
-                        {this.state.activeQuestion && this.state.activeQuestion.questionType === "yes-sometimes-no" && (
-                            <YesSometimesNoActions
-                            handleYesAnswer={this.handleYesAnswer}
-                            handleSometimesAnswer={this.handleSometimesAnswer}
-                            handleNoAnswer={this.handleNoAnswer}
-                            />
-                        )}
-                        {this.state.activeQuestion && this.state.activeQuestion.questionType === "qraded" && (
-                            <GradedActions
-                                handleGrade={this.handleGrade}
-                                maxPoints={this.state.activeQuestion.maxPoints}
-                            />
-                        )}
-                         {this.state.activeQuestion && this.state.activeQuestion.questionType === "select" && (
-                            <SelectActions
-                            handleSelect={this.handleSelect}
-                            />
-                        )}
+                        <Actions
+                            activeQuestion={this.state.activeQuestion}
+                            addAnswer={this.addAnswer}
+                        />
                     </Card.Actions>
                 </Card>
             </View>
@@ -301,26 +265,13 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center"
     },
-    yesButton: {
+    button: {
         flex: 1,
-        paddingTop: 5,
-        paddingRight: 5,
-        paddingBottom: 5,
-        paddingLeft: 5,
-        marginRight:3,
-    },
-    noButton: {
-        flex: 1,
-        paddingTop: 5,
-        paddingRight: 5,
-        paddingBottom: 5,
-        paddingLeft: 5,
         marginLeft: 3,
+        marginRight: 3,
     },
-    finishButton: {
-        flex: 1,
-        paddingTop: 5,
-        paddingBottom: 5,
+    buttonContent: {
+        padding: 5
     },
     label: {
         marginTop: 5,
