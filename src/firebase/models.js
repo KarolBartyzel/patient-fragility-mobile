@@ -59,7 +59,7 @@ class TestResult {
     static USER_ID='userId';
     static USER_NAME='userName';
     static PATIENT_ID='patientId';
-    static GROUP='group';
+    static ACCESS_GROUP='accessGroup';
     static SCORE='score';
     static DESCRIPTION='description';
     static DATE='date';
@@ -68,17 +68,17 @@ class TestResult {
     userId;
     userName;
     patientId;
-    group;
+    accessGroup;
     score;
     description;
     date;
 
-    constructor({ testId, userId, userName, patientId, group, score, description, date }) {
+    constructor({ testId, userId, userName, patientId, accessGroup, score, description, date }) {
         this.testId = testId;
         this.userId = userId;
         this.userName = userName;
         this.patientId = patientId;
-        this.group = group;
+        this.accessGroup = accessGroup;
         this.score = score;
         this.description = description;
         this.date = date;

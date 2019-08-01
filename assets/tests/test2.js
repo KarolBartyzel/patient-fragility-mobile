@@ -1,4 +1,4 @@
-{
+export default {
     "testId": "2",
     "title": "Kliniczna skala kruchości",
     "name": "Kliniczna skala kruchości",
@@ -67,5 +67,13 @@
             "maxPoints": null,
             "imagePath": "https://i.pinimg.com/564x/2c/2b/c2/2c2bc25c95924f6a491b4b2738d03795.jpg"
         }
-    ]
+    ],
+    "findScore": function findScore(answers, params) {
+        return null;
+    },
+    "findDescription": function findDescription(answers, score) {
+        const selection = answers[0].id;
+        const percentage = Math.min(100, 21.2 * (selection - 1));
+        return `Ryzyko zgonu w ciągu 70 miesięcy: około ${percentage}%.`;
+    }
 }

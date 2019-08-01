@@ -1,4 +1,4 @@
-{
+export default {
     "testId": "4",
     "title": "Ocena stanu zdrowia i autonomii",
     "name": "Przesiewowy kwestionariusz oceny stanu zdrowia i autonomii (PRISMA 7)",
@@ -53,5 +53,11 @@
             "maxPoints": null,
             "imagePath": null
         }
-    ]
+    ],
+    "findScore": function findScore(answers, params) {
+        return answers.filter(({ answer }) => answer === 'yes').length;
+    },
+    "findDescription": function findDescription(answers, score) {
+        return score < 4 ? 'Wynik ujemny' : 'Wynik dodatni';
+    }
 }
