@@ -2,7 +2,7 @@ export default {
     "testId": "2",
     "title": "Kliniczna skala kruchości",
     "name": "Kliniczna skala kruchości",
-    "maxScore": null,
+    "maxScore": 9,
     "questions": [
         {
             "id": "1",
@@ -41,7 +41,7 @@ export default {
         },
         {
             "id": "6",
-            "question": "6. Umiarkowana kruchość - potrzebują pomocy we wszystkich aktywnościach i prowadzeniu domu. Często mają problemy z poruszaniem się po schodach, myciu się, mogą potrzebować minimalnej pomocy w ubieraniu się",
+            "question": "Umiarkowana kruchość - potrzebują pomocy we wszystkich aktywnościach i prowadzeniu domu. Często mają problemy z poruszaniem się po schodach, myciu się, mogą potrzebować minimalnej pomocy w ubieraniu się",
             "questionType": "select",
             "maxPoints": null,
             "imagePath": "https://i.pinimg.com/564x/07/81/b3/0781b3805ae495c0390bc3f22b94f406.jpg"
@@ -69,11 +69,17 @@ export default {
         }
     ],
     "findScore": function findScore(answers, params) {
-        return null;
+        return 9 - (parseInt(answers[0].id, 10) - 1);
     },
     "findDescription": function findDescription(answers, score) {
-        const selection = answers[0].id;
-        const percentage = Math.min(100, 21.2 * (selection - 1));
-        return `Ryzyko zgonu w ciągu 70 miesięcy: około ${percentage}%.`;
+        return score === 9 ? 'Bardzo sprawni'
+        : score === 8 ? 'Sprawni'
+        : score === 7 ? 'Radzący sobie'
+        : score === 6 ? 'Osłabiony/Podatny na chorobę'
+        : score === 5 ? 'Łagodna kruchość'
+        : score === 4 ? 'Umiarkowana kruchość'
+        : score === 3 ? 'Ciężka kruchość'
+        : score === 2 ? 'Bardzo nasilona kruchość'
+        : 'Śmiertelnie chory';
     }
 }
