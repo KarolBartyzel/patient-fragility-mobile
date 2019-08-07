@@ -173,16 +173,11 @@ class Test extends React.Component {
                                     activeQuestion={this.state.activeQuestion}
                                     setActiveQuestion={(activeQuestion) => { this.setState({ activeQuestion }); this.updateQuestionGrade('0'); }}
                                 />
-                                {this.state.activeQuestion && this.state.activeQuestion.questionType === "graded" && (
+                                {this.state.activeQuestion.questionType === "graded" && (
                                     <View style={styles.inputView}>
-                                        {/* <TextInput
-                                            label={'Punkty za odpowiedź (0 - ' + `${this.state.activeQuestion.maxPoints}` + ')'}
-                                            keyboardType={Platform.OS === 'ios' ? "number-pad" : "numeric"}
-                                            value={this.state.gradeForQuestion.toString()}
-                                            onChangeText={newGrade => this.updateQuestionGrade(newGrade)}
-                                            style={styles.numberInput}
-                                            returnKeyType='done'
-                                        /> */}
+                                        <Text style={{fontSize: 17, textAlign: 'center'}}>
+                                            Przyznaj punkty za odpowiedź:
+                                        </Text>
                                     </View>
                                 )}
                             </View>
@@ -311,11 +306,10 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between'
     },
     inputView: {
-        height: '20%',
+        height: '10%',
         width: '100%',
         alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 10,
+        justifyContent: 'center'
     },
 });
 
