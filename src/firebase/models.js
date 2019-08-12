@@ -35,19 +35,16 @@ class Patient {
     static COLLECTION = 'patients';
 
     static ID='id';
-    static GROUP='group';
-    static AGE='age';
+    static GROUPS='groups';
     static CREATED_AT='createdAt';
 
     id;
-    group;
-    age;
+    groups;
     createdAt;
 
-    constructor({ id, group, age, createdAt }) {
+    constructor({ id, groups, createdAt }) {
         this.id = id;
-        this.group = group;
-        this.age = age;
+        this.groups = groups;
         this.createdAt = createdAt;
     }
 }

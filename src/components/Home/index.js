@@ -19,7 +19,7 @@ class Home extends React.Component {
 
         this.typingTimeout = 0;
         this.onNavigateBack = this.props.addListener('willFocus', () => {
-            this.setState({ searchPatientQuery: '' }, this.onLoadMore);
+            this.setState({ searchPatientQuery: '', patients: null }, this.onLoadMore);
         });
     }
 
