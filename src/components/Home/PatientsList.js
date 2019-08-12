@@ -10,7 +10,7 @@ function PatientsList(props) {
         <Card.Content style={{ flex: 1 }}>
             <View style={styles.patientsListHeader}>
                 <Text style={styles.patientsListHeaderPart}>Id pacjenta</Text>
-                <Text style={styles.patientsListHeaderPart}>Wiek</Text>
+                <Text style={styles.patientsListHeaderPart}>Grupy dostępu</Text>
             </View>
             {!props.patients && (
                 <ActivityIndicator animating={true} />
@@ -24,7 +24,7 @@ function PatientsList(props) {
                         <TouchableHighlight onPress={() => { props.navigate('Patient', { patientId: patient.id }); }}>
                             <View style={styles.patientsListEntry}>
                                 <Text style={styles.patientsListEntryPart}>{patient.id}</Text>
-                                <Text style={styles.patientsListEntryPart}>{patient.age ? `${patient.age} lat(a)` : 'Nieznany'}</Text>
+                                <Text style={styles.patientsListEntryPart}>{`[${patient.groups.map((group) => `"${group}"`).join(', ')}]`}</Text>
                             </View>
                         </TouchableHighlight>
                     )}
