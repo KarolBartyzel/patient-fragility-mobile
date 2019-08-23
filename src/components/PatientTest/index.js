@@ -26,11 +26,11 @@ class PatientTest extends React.Component {
 
         return (
             <Card style={styles.patientTestCard}>
-                <View style={{flexDirection: "row", alignItems: 'center', justifyContent: 'space-between', width: '90%'}}>
-                    <Title style={{width: '90%', flexWrap: 'wrap', paddingLeft: 2}}>
+                <View style={styles.titleView}>
+                    <Title style={styles.title}>
                         {`${testDefinition.title} - wyniki`}
                     </Title>
-                    <IconButton style={{width: '10%', paddingLeft: 2}} icon="add" size={30} onPress={() => { this.props.navigate('NewPatientTest', { patientId: this.props.patientId, testId: this.props.testId }); }} />
+                    <IconButton style={styles.iconButton} icon="add" size={30} onPress={() => { this.props.navigate('NewPatientTest', { patientId: this.props.patientId, testId: this.props.testId }); }} />
                 </View>
 
                 {!testResults && (
@@ -60,6 +60,21 @@ class PatientTest extends React.Component {
 }
 
 const styles = StyleSheet.create({
+    titleView: {
+        flexDirection: "row",
+        alignItems: 'center', 
+        justifyContent: 'space-between', 
+        width: '90%'
+    },
+    title: {
+        width: '90%', 
+        flexWrap: 'wrap', 
+        paddingLeft: 2
+    },
+    iconButton: {
+        width: '10%', 
+        paddingLeft: 2
+    },
     patientTestProgress: {
         justifyContent: 'center'
     },
