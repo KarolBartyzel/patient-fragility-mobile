@@ -96,9 +96,6 @@ async function addPatient(id, groups) {
             }
         });
     });
-
-
-
 }
 
 async function getPatientResults(patientId) {

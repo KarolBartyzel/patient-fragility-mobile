@@ -1,6 +1,6 @@
 export default {
     "testId": "4",
-    "title": "Ocena stanu zdrowia i autonomii",
+    "title": "Przesiewowy kwestionariusz oceny stanu zdrowia i autonomii",
     "name": "Przesiewowy kwestionariusz oceny stanu zdrowia i autonomii (PRISMA 7)",
     "maxScore": 7,
     "questions": [
