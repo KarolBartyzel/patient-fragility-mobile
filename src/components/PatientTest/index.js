@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, FlatList } from 'react-native';
-import { ActivityIndicator, Card, List, IconButton } from 'react-native-paper';
+import { ActivityIndicator, Card, List, IconButton, Title } from 'react-native-paper';
 import moment from 'moment';
 
 import db from './../../firebase';
@@ -26,10 +26,12 @@ class PatientTest extends React.Component {
 
         return (
             <Card style={styles.patientTestCard}>
-                <Card.Title
-                    title={`${testDefinition.title} - wyniki`}
-                    right={(props) => <IconButton {...props} icon="add" size={30} onPress={() => { this.props.navigate('NewPatientTest', { patientId: this.props.patientId, testId: this.props.testId }); }} /> }
-                />
+                <View style={{flexDirection: "row", alignItems: 'center', justifyContent: 'space-between', width: '90%'}}>
+                    <Title style={{width: '90%', flexWrap: 'wrap', paddingLeft: 2}}>
+                        {`${testDefinition.title} - wyniki`}
+                    </Title>
+                    <IconButton style={{width: '10%', paddingLeft: 2}} icon="add" size={30} onPress={() => { this.props.navigate('NewPatientTest', { patientId: this.props.patientId, testId: this.props.testId }); }} />
+                </View>
 
                 {!testResults && (
                     <View style={styles.patientTestProgress}>
@@ -62,7 +64,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     patientTestCard: {
-        flex: 1
+        display: 'flex',
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     patientTestsWrapper: {
         flex: 1

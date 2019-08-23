@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Picker, Platform } from 'react-native';
-import { Button, Card, Text, TextInput } from 'react-native-paper';
+import { Button, Card, Text, TextInput, Title } from 'react-native-paper';
 import PropTypes from 'prop-types';
 
 import db from './../../firebase';
@@ -126,8 +126,12 @@ class Test extends React.Component {
         return (
             <View style={styles.view}>
                 <Card style={{ flex: 1 }}>
-                    <Card.Title title={this.props.test.title} titleStyle={styles.title} subtitle={this.props.test.name} subtitleStyle={styles.label}/>
                     <Card.Content style={styles.cardContent}>
+                        <View style ={styles.titleView}>
+                            <Title style={styles.title}>
+                                {this.props.test.title}
+                            </Title>
+                        </View>
                         {!this.state.activeQuestion && this.state.userGroups && !this.state.testCompleted && (
                             <View style={styles.groupPickerWrapper}>
                                 {this.props.test.testId === '3' && (
@@ -249,12 +253,14 @@ const styles = StyleSheet.create({
     view: {
         height: '100%'
     },
-    titleNav: {
-        paddingRight: 16,
+    titleView: {
+        width: '100%',
+        alignItems: 'flex-start'
     },
     title: {
-        fontSize: 22,
-        marginTop:10
+        marginBottom: 15,
+        flexWrap: 'wrap',
+        fontSize: 22
     },
     cardContent: {
         flex: 1,
@@ -268,12 +274,6 @@ const styles = StyleSheet.create({
     buttonContent: {
         padding: 5
     },
-    label: {
-        marginTop: 5,
-        marginBottom: 15,
-        fontSize: 17,
-        flexWrap: 'wrap'
-    },
     navigateButton: {
         width: '5%',
         margin: 0,
@@ -281,8 +281,7 @@ const styles = StyleSheet.create({
     },
     groupPicker: {
         height: 200,
-        width: '80%',
-        // fontSize: 16
+        width: '80%'
     },
     groupPickerLabel: {
         marginTop: 10,
