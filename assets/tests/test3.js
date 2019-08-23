@@ -1,6 +1,6 @@
 export default {
     "testId": "3",
-    "title": "Ocena Stanu Psychicznego",
+    "title": "Krótka Skala Oceny Stanu Psychicznego",
     "name": "Krótka Skala Oceny Stanu Psychicznego (MMSE)",
     "maxScore": 30,
     "questions": [

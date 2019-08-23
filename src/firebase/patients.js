@@ -40,8 +40,10 @@ async function getPatients(patientId) {
         (patientId ? orderedQuery.startAt(patientId).endAt(`${patientId}\uf8ff`) : orderedQuery)
             .once('value', (snapshot) => {
                 const value = snapshot.val();
+                console.log(value);
+                console.log(userGroups);
                 const patients = value ? Object.values(value).map((rawPatient) => new Patient(rawPatient)) : [];
-                const filteredPatients = patients.filter((patient) => userGroups.map((userGroup) => userGroup.group).includes(patient.group));
+                const filteredPatients = patients.filter((patient) => userGroups.map((userGroup) => userGroup.groups).includes(patient.group));
                 resolve(filteredPatients);
             });
     });
