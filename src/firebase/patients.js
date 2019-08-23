@@ -32,7 +32,7 @@ function getUserGroups() {
 // Exported
 async function getPatients(patientId) {
     return new Promise(async (resolve, reject) => {
-        const userGroups = await getUserGroups();
+        const userGroups = (await getUserGroups()).map((userGroup) => userGroup.group);
         const orderedQuery = firebase.database()
             .ref(Patient.COLLECTION)
             .orderByChild(Patient.ID);
@@ -41,7 +41,7 @@ async function getPatients(patientId) {
             .once('value', (snapshot) => {
                 const value = snapshot.val();
                 const patients = value ? Object.values(value).map((rawPatient) => new Patient(rawPatient)) : [];
-                const filteredPatients = patients.filter((patient) => userGroups.map((userGroup) => userGroup.groups).includes(patient.group));
+                const filteredPatients = patients.filter((patient) => userGroups.some((uG) => new Set(patient.groups).has(uG)));
                 resolve(filteredPatients);
             });
     });
@@ -52,29 +52,53 @@ async function isUserAuthorized() {
     return Boolean(userGroups);
 }
 
-function checkIfPatientExists(searchPatientQuery) {
+function checkIfPatientExists(patientId, group) {
     return new Promise((resolve, reject) => {
         firebase.database()
             .ref(Patient.COLLECTION)
             .orderByChild(Patient.ID)
-            .equalTo(searchPatientQuery)
+            .equalTo(patientId)
             .once('value', (snapshot) => {
-                resolve(snapshot.val() !== null);
+                const patient = snapshot.val();
+                resolve(patient !== null && (!group || !Object.values(patient[patientId]).some((patients) => patients.group === group)));
             });
     });
 }
 
-async function addPatient(id, age) {
-    const newPatient = new Patient({
-        id,
-        age: age ? Number(age) : null,
-        createdAt: Date.now()
+async function addPatient(id, groups) {
+    return new Promise((resolve, reject) => {
+        firebase.database()
+        .ref(Patient.COLLECTION)
+        .orderByChild(Patient.ID)
+        .equalTo(id)
+        .once('value', (snapshot) => {
+            const patient = snapshot.val() ? snapshot.val()[id] : null;
+
+            if (patient === null || groups && !Object.values(patient).some((patients) => patients.group === groups)) {
+                const newPatient = new Patient(patient
+                    ? {
+                        ...patient,
+                        groups: [...patient.groups, groups]
+                    } : {
+                        id,
+                        groups: [groups],
+                        createdAt: Date.now()
+                    });
+
+                resolve(firebase
+                    .database()
+                    .ref(`${Patient.COLLECTION}/${id}`)
+                    .set(newPatient)
+                );
+            }
+            else {
+                reject();
+            }
+        });
     });
 
-    return firebase
-        .database()
-        .ref(`/${Patient.COLLECTION}/${id}`)
-        .set(newPatient);
+
+
 }
 
 async function getPatientResults(patientId) {

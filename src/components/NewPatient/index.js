@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
-import { TextInput, HelperText, Button, Card, ActivityIndicator } from 'react-native-paper';
+import { View, StyleSheet, Picker } from 'react-native';
+
+import { TextInput, Text, HelperText, Button, Card, ActivityIndicator } from 'react-native-paper';
 import PropTypes from 'prop-types';
 import { debounce } from 'lodash';
 
@@ -12,49 +13,83 @@ class NewPatient extends React.Component {
         this.state = {
             patientId: '',
             validationText: '',
-            age: '',
             isSaving: false,
+            userGroups: null,
+            patientGroup: null,
+            existingPatientsIds: {}
         };
         this.debouncedValidatePatientId = debounce(this.validatePatientId, 300);
+        this.onNavigateBack = this.props.addListener('willFocus', this.reload);
     }
 
-    validatePatientId(patientId) {
-        return new Promise(async (resolve, reject) => {
-            if (!patientId) {
+    validatePatientId() {
+        return new Promise((resolve, reject) => {
+            if (!this.state.patientId) {
                 this.setState({ validationText: 'Id pacjenta jest wymagane' }, () => resolve(false));
             }
-            else if (await db.patients.checkIfPatientExists(patientId.trim())) {
-                this.setState({ validationText: 'Pacjent z podanym id już istnieje' }, () => resolve(false));
-            }
             else {
-                resolve(true);
+                const existingIdsForGroup = this.state.existingPatientsIds[this.state.patientGroup];
+                const existingIdsForGroupCaseInsensitive = existingIdsForGroup ? existingIdsForGroup.map((group) => group.toLowerCase()) : [];
+                if (existingIdsForGroupCaseInsensitive.includes(this.state.patientId.trim().toLowerCase())) {
+                    this.setState({ validationText: 'Pacjent z podanym id już istnieje' }, () => resolve(false));
+                }
+                else {
+                    this.setState({ validationText: '' }, () => resolve(true));
+                }
             }
         });
     }
 
     onChangeId = (patientId) => {
-        this.setState({ validationText: '', patientId: patientId.toLowerCase() });
-        this.debouncedValidatePatientId(patientId);
+        this.setState({ validationText: '', patientId: patientId }, this.debouncedValidatePatientId);
     }
 
-    onChangeAge = (age) => {
-        const ageNumber = Number(age);
-        this.setState({ age: ageNumber === 0 ? '' : String(ageNumber > 120 ? Math.floor(ageNumber / 10) : ageNumber) });
+    onGroupPickerChange = (patientGroup) => {
+        this.setState({ patientGroup }, this.validatePatientId);
     }
 
     createPatient = () => {
-        this.debouncedValidatePatientId(this.state.patientId)
+        this.validatePatientId()
             .then((valid) => {
+                const patientId = this.state.patientId.trim();
                 if (valid) {
                     this.setState({ isSaving: true }, () => {
                         db.patients
-                            .addPatient(this.state.patientId.trim(), this.state.age)
+                            .addPatient(patientId, this.state.patientGroup)
                             .then(() => {
-                                this.props.replace('Patient', { patientId: this.state.patientId });
+                                this.props.replace('Patient', { patientId });
                             });
                     });
                 }
             });
+    }
+
+    reload = async () => {
+        const userGroups = (await db.patients.getUserGroups()).map(({ group }) => group);
+        const patients = await db.patients.getPatients();
+        if (patients) {
+            const existingPatientsIds = patients.reduce((dict, patient) => {
+                patient.groups.forEach((patientGroup) => {
+                    if (dict[patientGroup]) {
+                        dict[patientGroup].push(patient.id);
+                    }
+                    else {
+                        dict[patientGroup] = [patient.id];
+                    }
+                });
+                return dict;
+            }, {});
+            this.setState({ existingPatientsIds });
+        }
+        this.setState({ userGroups, patientGroup: userGroups[0] });
+    }
+    
+    componentDidMount() {
+        this.reload();
+    }
+
+    componentWillUnmount() {
+        this.onNavigateBack.remove();
     }
 
     render() {
@@ -77,13 +112,20 @@ class NewPatient extends React.Component {
                         style={styles.newPatientIdInput}
                     />
                     <HelperText type="error" visible={!!this.state.validationText}>{this.state.validationText}</HelperText>
-                    <TextInput
-                        label='Wiek pacjenta (opcjonalny)'
-                        keyboardType={Platform.OS === 'ios' ? "number-pad" : "numeric"}
-                        value={this.state.age}
-                        onChangeText={this.onChangeAge}
-                        style={styles.newPatientAgeInput}
-                    />
+                    <Text style={styles.groupPickerLabel}>Wybierz grupę dostępu</Text>
+                    {this.state.userGroups && (
+                        <Picker
+                            selectedValue={this.state.patientGroup}
+                            onValueChange={this.onGroupPickerChange}
+                        >
+                            {this.state.userGroups.map((group) => {
+                                return <Picker.Item key={group} label={group} value={group} />;
+                            })}
+                        </Picker>
+                    )}
+                    {!this.state.userGroups && (
+                        <ActivityIndicator />
+                    )}
                     <Button
                         mode="contained"
                         style={styles.newPatientButton}
@@ -91,6 +133,7 @@ class NewPatient extends React.Component {
                         onPress={this.createPatient}
                         dark={true}
                         uppercase={false}
+                        disabled={!this.state.userGroups || !!this.state.validationText}
                     >
                         Stwórz pacjenta
                     </Button>
