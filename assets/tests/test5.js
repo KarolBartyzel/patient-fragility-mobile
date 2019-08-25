@@ -2,7 +2,6 @@ export default {
     "testId": "5",
     "title": "Wskaźnik kruchości Tilburga",
     "name": "Wskaźnik kruchości Tilburga",
-    "maxScore": 20,
     "questions": [
         {
             "id": "1",
@@ -138,5 +137,8 @@ export default {
             : score < 9 ? 'Łagodna kruchość'
             : score < 12 ? 'Umiarkowana kruchość'
             : 'Ciężka kruchość';
+    },
+    "maxScore": function maxScore(educationDuration, age) {
+        return 20;
     }
 }
