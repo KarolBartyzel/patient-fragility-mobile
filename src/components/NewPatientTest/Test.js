@@ -22,7 +22,8 @@ class Test extends React.Component {
             testCompleted: false,
             gradeForQuestion: 0,
             testScore: 0,
-            scoreDescription: null,
+            testDescription: null,
+            maxScore: 0,
             age: '',
             educationDuration: ''
         }
@@ -38,7 +39,7 @@ class Test extends React.Component {
 
     saveResult = () => {
         db.patients
-            .addPatientTest(this.props.test.testId, this.props.patientId, this.state.userGroup, this.state.testScore, this.state.scoreDescription)
+            .addPatientTest(this.props.test.testId, this.props.patientId, this.state.userGroup, this.state.testScore, this.state.testDescription)
             .then(() => {
                 this.props.replace('PatientTest', { patientId: this.props.patientId, testId: this.props.test.testId });
             });
@@ -73,13 +74,15 @@ class Test extends React.Component {
 
     checkAnswers = () => {
         if (Object.keys(this.state.answers).length === this.props.test.questions.length || this.props.test.questions['1'].questionType === 'select') {
-            const { findScore, findDescription } = testsDefinitions.find(({ testId }) => testId === this.props.test.testId);
+            const { findScore, findDescription, maxScore } = testsDefinitions.find(({ testId }) => testId === this.props.test.testId);
             const score = findScore(Object.values(this.state.answers), this.props.test.testId === '3' ? { age: this.state.age, educationDuration: this.state.educationDuration } : null);
             const description = findDescription(Object.values(this.state.answers), score);
+            const maximumScore = maxScore(this.state.educationDuration, this.state.age);
             this.setState({
                 testCompleted: true,
                 testScore: score,
-                scoreDescription: description,
+                testDescription: description,
+                maxScore: maximumScore,
                 activeQuestion: null
             });
         } else if (!this.state.activeQuestion) {
@@ -189,8 +192,8 @@ class Test extends React.Component {
                          {!this.state.activeQuestion && this.state.testCompleted && (
                             <TestResultView
                                 testScore={this.state.testScore}
-                                maxScore={this.props.test.maxScore}
-                                testDescription={this.state.scoreDescription}
+                                maxScore={this.state.maxScore}
+                                testDescription={this.state.testDescription}
                             />
                          )}
                     </Card.Content>
@@ -299,7 +302,7 @@ const styles = StyleSheet.create({
         marginTop: 10
     },
     outerView: {
-        height: '100%',
+        height: '85%',
         width: '100%',
         alignItems: 'center',
         justifyContent: 'space-between'

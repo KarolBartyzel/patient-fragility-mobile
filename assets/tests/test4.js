@@ -2,7 +2,6 @@ export default {
     "testId": "4",
     "title": "Przesiewowy kwestionariusz oceny stanu zdrowia i autonomii",
     "name": "Przesiewowy kwestionariusz oceny stanu zdrowia i autonomii (PRISMA 7)",
-    "maxScore": 7,
     "questions": [
         {
             "id": "1",
@@ -59,5 +58,8 @@ export default {
     },
     "findDescription": function findDescription(answers, score) {
         return score < 4 ? 'Wynik ujemny' : 'Wynik dodatni';
+    },
+    "maxScore": function maxScore(educationDuration, age) {
+        return 7;
     }
 }

@@ -2,7 +2,6 @@ export default {
     "testId": "3",
     "title": "Krótka Skala Oceny Stanu Psychicznego",
     "name": "Krótka Skala Oceny Stanu Psychicznego (MMSE)",
-    "maxScore": 30,
     "questions": [
         {
             "id": "1",
@@ -148,5 +147,8 @@ export default {
             : score <= 23 ? 'Otępienie lekkiego stopnia'
             : score <= 26 ? 'Zaburzenia poznawcze bez otępienia'
             : 'Wynik prawidłowy';
+    },
+    "maxScore": function maxScore(educationDuration, age) {
+        return 30;
     }
 }
