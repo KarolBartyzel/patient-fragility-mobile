@@ -2,7 +2,6 @@ export default {
     "testId": "1",
     "title": "Skala Katza",
     "name": "Skala Katza (ADL)",
-    "maxScore": 6,
     "questions": [
         {
             "id": "1",
@@ -50,7 +49,10 @@ export default {
     "findScore": function findScore(answers, params) {
         return answers.filter(({ answer }) => answer === 'yes').length;
     },
-    "findDescription": function (answers, score) {
+    "findDescription": function findDescription(answers, score) {
         return score <= 2 ? 'Osoby znacznie niesprawne' : score <= 4 ? 'Osoby umiarkowanie niesprawne' : 'Osoby sprawne';
+    },
+    "maxScore": function maxScore(educationDuration, age) {
+        return 6;
     }
 }

@@ -2,7 +2,6 @@ export default {
     "testId": "2",
     "title": "Kliniczna skala kruchości",
     "name": "Kliniczna skala kruchości",
-    "maxScore": 9,
     "questions": [
         {
             "id": "1",
@@ -81,5 +80,8 @@ export default {
         : score === 3 ? 'Ciężka kruchość'
         : score === 2 ? 'Bardzo nasilona kruchość'
         : 'Śmiertelnie chory';
+    },
+    "maxScore": function maxScore(educationDuration, age) {
+        return 9;
     }
 }

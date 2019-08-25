@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
         height: '60%',
     },
     viewHeightTall: {
-        height: '75%',
+        height: '60%',
     },
     title: {
         fontSize: 25,
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '100%',
-        alignItems: 'center'
+        alignItems: 'center',
     }
 });
 
