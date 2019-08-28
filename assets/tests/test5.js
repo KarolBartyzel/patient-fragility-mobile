@@ -132,13 +132,13 @@ export default {
 
         return answers.filter((result, index) => points[index].includes(result.answer)).length;
     },
-    "findDescription": function findDescription(answers, score) {
+    "findDescription": function findDescription(score, params) {
         return score < 5 ? 'Brak kruchości'
             : score < 9 ? 'Łagodna kruchość'
             : score < 12 ? 'Umiarkowana kruchość'
             : 'Ciężka kruchość';
     },
-    "maxScore": function maxScore(educationDuration, age) {
+    "maxScore": function maxScore(params) {
         return 20;
     }
 }

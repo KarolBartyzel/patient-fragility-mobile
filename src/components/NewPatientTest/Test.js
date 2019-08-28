@@ -76,8 +76,8 @@ class Test extends React.Component {
         if (Object.keys(this.state.answers).length === this.props.test.questions.length || this.props.test.questions['1'].questionType === 'select') {
             const { findScore, findDescription, maxScore } = testsDefinitions.find(({ testId }) => testId === this.props.test.testId);
             const score = findScore(Object.values(this.state.answers), this.props.test.testId === '3' ? { age: this.state.age, educationDuration: this.state.educationDuration } : null);
-            const description = findDescription(Object.values(this.state.answers), score);
-            const maximumScore = maxScore(this.state.educationDuration, this.state.age);
+            const description = findDescription(score);
+            const maximumScore = maxScore(this.props.test.testId === '3' ? { age: this.state.age, educationDuration: this.state.educationDuration } : null);
             this.setState({
                 testCompleted: true,
                 testScore: score,
