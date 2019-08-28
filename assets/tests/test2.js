@@ -70,7 +70,7 @@ export default {
     "findScore": function findScore(answers, params) {
         return 9 - (parseInt(answers[0].id, 10) - 1);
     },
-    "findDescription": function findDescription(answers, score) {
+    "findDescription": function findDescription(score, params) {
         return score === 9 ? 'Bardzo sprawni'
         : score === 8 ? 'Sprawni'
         : score === 7 ? 'Radzący sobie'
@@ -81,7 +81,7 @@ export default {
         : score === 2 ? 'Bardzo nasilona kruchość'
         : 'Śmiertelnie chory';
     },
-    "maxScore": function maxScore(educationDuration, age) {
+    "maxScore": function maxScore(params) {
         return 9;
     }
 }

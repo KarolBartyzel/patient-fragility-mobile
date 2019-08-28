@@ -131,7 +131,7 @@ async function getPatientTestResults(patientId, testId) {
 }
 
 // Usage db.patients.addPatientTest(testId, patientId, "1", 15, 'Mała kruchość');
-function addPatientTest(testId, patientId, accessGroup, score, description) {
+function addPatientTest(testId, patientId, accessGroup, score, descriptions) {
     const { currentUser } = firebase.auth();
 
     const newTestResult = new TestResult({
