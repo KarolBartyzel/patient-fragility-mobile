@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, StyleSheet, Picker, Platform } from 'react-native';
 import { Button, Card, Text, TextInput, Title } from 'react-native-paper';
+import GestureRecognizer from 'react-native-swipe-gestures';
+
 import PropTypes from 'prop-types';
 
 import db from './../../firebase';
@@ -26,11 +28,35 @@ class Test extends React.Component {
             maxScore: 0,
             age: '',
             educationDuration: ''
+        };
+
+        this.gestureConfig = {
+            velocityThreshold: 0.3,
+            directionalOffsetThreshold: 80
+        };
+    }
+
+    setActiveQuestion = (activeQuestion) => {
+        this.setState({ activeQuestion });
+        this.updateQuestionGrade('0');
+    }
+
+    getActualIndex = () => {
+        return this.props.test.questions.findIndex((question) => question.id === this.state.activeQuestion.id);
+    }
+
+    handleGoToPrevious = () => {
+        const newIndex = this.getActualIndex() - 1;
+        if (newIndex >= 0) {
+            this.setActiveQuestion(this.props.test.questions[newIndex]);
         }
     }
 
-    setActiveQuestion = (questionId) => {
-        this.setState({activeQuestion: this.props.test.questions.find(question => question.id === questionId)});
+    handleGoToNext = () => {
+        const newIndex = this.getActualIndex() + 1;
+        if (newIndex < this.props.test.questions.length) {
+            this.setActiveQuestion(this.props.test.questions[newIndex]);
+        }
     }
 
     discardResult = () => {
@@ -130,7 +156,7 @@ class Test extends React.Component {
             <View style={styles.view}>
                 <Card style={{ flex: 1 }}>
                     <Card.Content style={styles.cardContent}>
-                        <View style ={styles.titleView}>
+                        <View style={styles.titleView}>
                             <Title style={styles.title}>
                                 {this.props.test.title}
                             </Title>
@@ -173,12 +199,26 @@ class Test extends React.Component {
                                 )}
                             </View>
                         )}
+                        {!this.state.activeQuestion && this.state.testCompleted && (
+                            <TestResultView
+                                testScore={this.state.testScore}
+                                maxScore={this.state.maxScore}
+                                testDescription={this.state.testDescription}
+                            />
+                         )}
                         {this.state.activeQuestion && (
-                            <View style={styles.outerView}>
+                            <GestureRecognizer
+                                onSwipeLeft={this.handleGoToNext}
+                                onSwipeRight={this.handleGoToPrevious}
+                                style={styles.outerView}
+                                config={this.gestureConfig}
+                            >
                                 <TestQuestion
+                                    getActualIndex={this.getActualIndex}
                                     questions={this.props.test.questions}
                                     activeQuestion={this.state.activeQuestion}
-                                    setActiveQuestion={(activeQuestion) => { this.setState({ activeQuestion }); this.updateQuestionGrade('0'); }}
+                                    handleGoToPrevious={this.handleGoToPrevious}
+                                    handleGoToNext={this.handleGoToNext}
                                 />
                                 {this.state.activeQuestion.questionType === "graded" && (
                                     <View style={styles.inputView}>
@@ -187,15 +227,8 @@ class Test extends React.Component {
                                         </Text>
                                     </View>
                                 )}
-                            </View>
+                            </GestureRecognizer>
                         )}
-                         {!this.state.activeQuestion && this.state.testCompleted && (
-                            <TestResultView
-                                testScore={this.state.testScore}
-                                maxScore={this.state.maxScore}
-                                testDescription={this.state.testDescription}
-                            />
-                         )}
                     </Card.Content>
                     <Card.Actions>
                         {!this.state.activeQuestion && !this.state.testCompleted && (
@@ -204,7 +237,7 @@ class Test extends React.Component {
                                 disabled={this.props.test.testId === '3' && (!this.state.age || !this.state.educationDuration)}
                                 style={styles.button}
                                 contentStyle={styles.buttonContent}
-                                onPress={() => this.setActiveQuestion("1")}
+                                onPress={() => this.setActiveQuestion(this.props.test.questions[0])}
                                 dark={true}
                             >
                                 Wykonaj test
@@ -254,7 +287,7 @@ Test.propTypes = {
 
 const styles = StyleSheet.create({
     view: {
-        height: '100%'
+        height: '100%',
     },
     titleView: {
         width: '100%',
