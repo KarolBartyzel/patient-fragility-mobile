@@ -49,10 +49,10 @@ export default {
     "findScore": function findScore(answers, params) {
         return answers.filter(({ answer }) => answer === 'yes').length;
     },
-    "findDescription": function findDescription(answers, score) {
+    "findDescription": function findDescription(score, params) {
         return score <= 2 ? 'Osoby znacznie niesprawne' : score <= 4 ? 'Osoby umiarkowanie niesprawne' : 'Osoby sprawne';
     },
-    "maxScore": function maxScore(educationDuration, age) {
+    "maxScore": function maxScore(params) {
         return 6;
     }
 }

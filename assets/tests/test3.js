@@ -139,16 +139,23 @@ export default {
     ],
     "findScore": function findScore(answers, params) {
         const { educationDuration, age } = params;
-        return answers.map(({ answer }) => answer).reduce((sum, value) => sum + value, 0) - Math.round(0.471 * (educationDuration - 12) + 0.31 * (70 - age));
+        return getCorrectedMMSEScore(answers.map(({ answer }) => answer).reduce((sum, value) => sum + value, 0), educationDuration, age);
     },
-    "findDescription": function findDescription(answers, score) {
-        return score <= 10 ? 'Otępienie głębokie'
-            : score <= 18 ? 'Otępienie średniego stopnia'
-            : score <= 23 ? 'Otępienie lekkiego stopnia'
-            : score <= 26 ? 'Zaburzenia poznawcze bez otępienia'
+    "findDescription": function findDescription(score, params) {
+        const { educationDuration, age } = params;
+        const correctedScore = getCorrectedMMSEScore(score, educationDuration, age);
+        return correctedScore <= getCorrectedMMSEScore(10, educationDuration, age) ? 'Otępienie głębokie'
+            : correctedScore <= getCorrectedMMSEScore(18, educationDuration, age) ? 'Otępienie średniego stopnia'
+            : correctedScore <= getCorrectedMMSEScore(23, educationDuration, age) ? 'Otępienie lekkiego stopnia'
+            : correctedScore <= getCorrectedMMSEScore(26, educationDuration, age) ? 'Zaburzenia poznawcze bez otępienia'
             : 'Wynik prawidłowy';
     },
-    "maxScore": function maxScore(educationDuration, age) {
-        return 30;
+    "maxScore": function maxScore(params) {
+        const { educationDuration, age } = params;
+        return getCorrectedMMSEScore(30, educationDuration, age);
     }
+}
+
+function getCorrectedMMSEScore(mmseScore, educationDuration, age) {
+    return mmseScore - Math.round(0.471 * (educationDuration - 12) + 0.31 * (70 - age));
 }
