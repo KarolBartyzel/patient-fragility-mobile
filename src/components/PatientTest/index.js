@@ -47,8 +47,7 @@ class PatientTest extends React.Component {
                             renderItem={({ item: testResult }) => (
                                 <List.Item
                                     title={testResult.description}
-                                    description={`${moment(testResult.date).format("Do MMM YYYY")} (${testResult.score} / ${testDefinition
-                                        .maxScore})\n${testResult.userName}`}
+                                    description={`${moment(testResult.date).format("Do MMM YYYY")} (${testResult.score})\n${testResult.userName}`}
                                 />
                             )}
                         />

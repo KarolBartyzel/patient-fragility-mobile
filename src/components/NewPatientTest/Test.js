@@ -38,8 +38,9 @@ class Test extends React.Component {
     }
 
     saveResult = () => {
+        const scoreStr = `${this.state.testScore} / ${this.state.maxScore}`;
         db.patients
-            .addPatientTest(this.props.test.testId, this.props.patientId, this.state.userGroup, this.state.testScore, this.state.testDescription)
+            .addPatientTest(this.props.test.testId, this.props.patientId, this.state.userGroup, scoreStr, this.state.testDescription)
             .then(() => {
                 this.props.replace('PatientTest', { patientId: this.props.patientId, testId: this.props.test.testId });
             });

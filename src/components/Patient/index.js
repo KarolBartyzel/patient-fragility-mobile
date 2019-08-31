@@ -50,7 +50,7 @@ class Patient extends React.Component {
                         return (
                             <List.Item
                                 title={`${testDefinition.title} (${testResult ? testResult.count : 0})`}
-                                description={testResult ? `${testResult.description}\n${moment(testResult.date).format("Do MMM YYYY")} (${testResult.score} / ${testDefinition.maxScore})`: 'Brak wyników'}
+                                description={testResult ? `${testResult.description}\n${moment(testResult.date).format("Do MMM YYYY")} (${testResult.score})`: 'Brak wyników'}
                                 right={() => (
                                     <View style={styles.patientDetailsTestRight}>
                                         <IconButton icon="info" size={30} disabled={!testResult} onPress={() => { this.props.navigate('PatientTest', { patientId: this.props.patientId, testId: testDefinition.testId }); }} />
