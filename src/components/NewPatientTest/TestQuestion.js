@@ -4,28 +4,14 @@ import { Headline, Text, IconButton } from 'react-native-paper';
 import PropTypes from 'prop-types';
 
 function TestQuestion(props) {
-    function getActualIndex() {
-        return props.questions.findIndex((question) => question.id === props.activeQuestion.id);
-    }
-
-    function handleGoToPrevious() {
-        const actualIndex = getActualIndex();
-        props.setActiveQuestion(props.questions[actualIndex - 1]);
-    }
-
-    function handleGoToNext() {
-        const actualIndex = getActualIndex();
-        props.setActiveQuestion(props.questions[actualIndex + 1]);
-    }
-
     return (
         <View style={[ styles.view, props.activeQuestion.questionType === 'graded' ? styles.viewHeightShort : styles.viewHeightTall ]}>
             <View style={styles.cardContentView}>
                 <IconButton
                     icon="navigate-before"
                     style={styles.navigateButton}
-                    disabled={getActualIndex() === 0}
-                    onPress={handleGoToPrevious}
+                    disabled={props.getActualIndex() === 0}
+                    onPress={props.handleGoToPrevious}
                 />
                 <Headline
                     style={styles.title}
@@ -35,12 +21,12 @@ function TestQuestion(props) {
                 <IconButton
                     icon="navigate-next"
                     style={styles.navigateButton}
-                    disabled={getActualIndex() === props.questions.length - 1}
-                    onPress={handleGoToNext}
+                    disabled={props.getActualIndex() === props.questions.length - 1}
+                    onPress={props.handleGoToNext}
                 />
             </View>
             <Text
-                style={[ styles.label, props.activeQuestion.question.length > 200 ? styles.labelSmallFont : styles.labelBigFont ]}
+                style={[ styles.label,  ]}
                 adjustsFontSizeToFit={true}
             >
                 {props.activeQuestion.question}
