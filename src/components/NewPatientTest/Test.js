@@ -1,11 +1,8 @@
 import React from 'react';
 import { View, StyleSheet, Picker, Platform } from 'react-native';
 import { Button, Card, Text, TextInput, Title } from 'react-native-paper';
-<<<<<<< HEAD
 import GestureRecognizer from 'react-native-swipe-gestures';
 
-=======
->>>>>>> aefd7ca52dfd43af8be693dcae20fcdd53b54edd
 import PropTypes from 'prop-types';
 
 import db from './../../firebase';
@@ -160,11 +157,7 @@ class Test extends React.Component {
             <View style={styles.view}>
                 <Card style={{ flex: 1 }}>
                     <Card.Content style={styles.cardContent}>
-<<<<<<< HEAD
                         <View style={styles.titleView}>
-=======
-                        <View style ={styles.titleView}>
->>>>>>> aefd7ca52dfd43af8be693dcae20fcdd53b54edd
                             <Title style={styles.title}>
                                 {this.props.test.title}
                             </Title>
