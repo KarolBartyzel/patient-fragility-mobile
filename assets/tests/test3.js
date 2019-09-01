@@ -143,11 +143,10 @@ export default {
     },
     "findDescription": function findDescription(score, params) {
         const { educationDuration, age } = params;
-        const correctedScore = getCorrectedMMSEScore(score, educationDuration, age);
-        return correctedScore <= getCorrectedMMSEScore(10, educationDuration, age) ? 'Otępienie głębokie'
-            : correctedScore <= getCorrectedMMSEScore(18, educationDuration, age) ? 'Otępienie średniego stopnia'
-            : correctedScore <= getCorrectedMMSEScore(23, educationDuration, age) ? 'Otępienie lekkiego stopnia'
-            : correctedScore <= getCorrectedMMSEScore(26, educationDuration, age) ? 'Zaburzenia poznawcze bez otępienia'
+        return score <= getCorrectedMMSEScore(10, educationDuration, age) ? 'Otępienie głębokie'
+            : score <= getCorrectedMMSEScore(18, educationDuration, age) ? 'Otępienie średniego stopnia'
+            : score <= getCorrectedMMSEScore(23, educationDuration, age) ? 'Otępienie lekkiego stopnia'
+            : score <= getCorrectedMMSEScore(26, educationDuration, age) ? 'Zaburzenia poznawcze bez otępienia'
             : 'Wynik prawidłowy';
     },
     "maxScore": function maxScore(params) {
