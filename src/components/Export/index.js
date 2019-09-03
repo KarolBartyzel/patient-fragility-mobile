@@ -78,7 +78,7 @@ class Export extends React.Component {
                                                 </View>
                                                 <View style={styles.toggleTypeValue}>
                                                     <Text>CSV</Text>
-                                                    <RadioButton value="csv" color='lightblue' uncheckedColor='yellow' />
+                                                    <RadioButton value="csv" color='lightblue' />
                                                 </View>
                                             </RadioButton.Group>
                                         </View>
