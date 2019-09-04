@@ -32,10 +32,10 @@ class Home extends React.Component {
         if (this.typingTimeout) {
             clearTimeout(this.typingTimeout);
         }
-
         this.typingTimeout = setTimeout(this.onLoadMore, 300)
+        
         this.setState({
-            searchPatientQuery: searchPatientQuery.trim().toLowerCase(),
+            searchPatientQuery: searchPatientQuery,
         });
     }
 
