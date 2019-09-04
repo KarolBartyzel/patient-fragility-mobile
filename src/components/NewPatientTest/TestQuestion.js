@@ -73,13 +73,8 @@ const styles = StyleSheet.create({
     label: {
         marginTop: 15,
         flexWrap: 'wrap',
-        textAlign: 'center'
-    },
-    labelSmallFont: {
+        textAlign: 'center',
         fontSize: 17
-    },
-    labelBigFont: {
-        fontSize: 20
     },
     cardContentView: {
         flexDirection: 'row',

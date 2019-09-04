@@ -40,7 +40,7 @@ class NewUser extends React.Component {
                             dark={true}
                             icon="email"
                         >
-                            Wyślij maila
+                            Wyślij e-mail
                         </Button>
                         <Button
                             mode="contained"
