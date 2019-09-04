@@ -3,6 +3,7 @@ import { StyleSheet, View, FlatList } from 'react-native';
 import { ActivityIndicator, List, IconButton } from 'react-native-paper';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import db from './../../firebase';
 import testsDefinitions from './../../../assets/tests';
@@ -53,7 +54,7 @@ class Patient extends React.Component {
                                 description={testResult ? `${testResult.description}\n${moment(testResult.date).format("Do MMM YYYY")} (${testResult.score})`: 'Brak wyników'}
                                 right={() => (
                                     <View style={styles.patientDetailsTestRight}>
-                                        <IconButton icon="info" size={30} disabled={!testResult} onPress={() => { this.props.navigate('PatientTest', { patientId: this.props.patientId, testId: testDefinition.testId }); }} />
+                                        <IconButton icon={() => <MaterialCommunityIcons name="clipboard-text-outline" size={30} />} size={30} disabled={!testResult} onPress={() => { this.props.navigate('PatientTest', { patientId: this.props.patientId, testId: testDefinition.testId }); }} />
                                         <IconButton icon="add" size={30} onPress={() => { this.props.navigate('NewPatientTest', { patientId: this.props.patientId, testId: testDefinition.testId }); }} />
                                     </View>
                                 )}
