@@ -121,7 +121,7 @@ class Auth extends React.Component {
                         left={props => <List.Icon {...props} icon="history" />}
                     />
                     <List.Item
-                        title="Wyślij dane w Excelu na maila"
+                        title="Wyślij dane w Excelu na e-mail"
                         left={props => <List.Icon {...props} icon="email" />}
                     />
 

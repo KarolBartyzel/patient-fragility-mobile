@@ -25,7 +25,7 @@ class Export extends React.Component {
             this.setState({ isSending: true });
             db.firebaseFunctions.exportTests(this.state.type, this.props.patientId || '', this.state.email)
                 .then(({ status }) => {
-                    this.setState({ isSending: false, result: status === 200 ? `Mail został wysłany` : `Nie udało się wysłać maila`, })
+                    this.setState({ isSending: false, result: status === 200 ? `E-mail został wysłany` : `Nie udało się wysłać wiadomości e-mail`, })
                 });
         }
     }
@@ -53,11 +53,11 @@ class Export extends React.Component {
                             }}
                         >
                             <Card style={[styles.export, this.state.isSending ? styles.opacityBackground : null]}>
-                                <Card.Title title={this.state.result || 'Wyślij dane na maila'} />
+                                <Card.Title title={this.state.result || 'Wyślij dane na e-mail'} />
                                 {!this.state.result && (
                                     <Card.Content>
                                         <TextInput
-                                            label='Mail odbiorcy'
+                                            label='E-mail odbiorcy'
                                             value={this.state.email}
                                             error={!!this.state.validationText}
                                             onChangeText={this.onChangeEmail}
