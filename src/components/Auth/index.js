@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import * as Google from 'expo-google-app-auth';
 import { Button, Card, List, ActivityIndicator, Text } from 'react-native-paper';
 import { CLIENT_ID } from 'react-native-dotenv';
 import { Ionicons } from '@expo/vector-icons';
@@ -26,7 +27,7 @@ class Auth extends React.Component {
     onSignIn = async () => {
         this.setState({ isLoading: true });
         try {
-            const googleUser = await Expo.Google.logInAsync(CONFIG);
+            const googleUser = await Google.logInAsync(CONFIG);
             if (googleUser.type === "success") {
                 const unsubscribe = firebase.auth().onAuthStateChanged((firebaseUser) => {
                     unsubscribe();
@@ -60,6 +61,7 @@ class Auth extends React.Component {
                         })
                         .catch((error) => {
                             console.error(error);
+                            return { cancelled: true };
                         });
                 });
                 return googleUser.accessToken;

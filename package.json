@@ -15,6 +15,7 @@
     "expo": "^34.0.0",
     "expo-asset": "^6.0.0",
     "expo-font": "^6.0.1",
+    "expo-google-app-auth": "^6.0.0",
     "firebase": "^6.6.0",
     "lodash": "^4.17.15",
     "metro-react-native-babel-preset": "^0.53.1",
