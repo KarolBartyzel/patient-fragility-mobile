@@ -18,7 +18,7 @@ class Test extends React.Component {
         super(props)
         this.state = {
             userGroups: null,
-            userGroup: null,
+            userGroupIndex: null,
             answers: {},
             activeQuestion: null,
             testCompleted: false,
@@ -66,7 +66,7 @@ class Test extends React.Component {
     saveResult = () => {
         const scoreStr = `${this.state.testScore} / ${this.state.maxScore}`;
         db.patients
-            .addPatientTest(this.props.test.testId, this.props.patientId, this.state.userGroup, scoreStr, this.state.testDescription)
+            .addPatientTest(this.props.test.testId, this.props.patientId, this.state.userGroups[this.state.userGroupIndex], scoreStr, this.state.testDescription)
             .then(() => {
                 this.props.replace('PatientTest', { patientId: this.props.patientId, testId: this.props.test.testId });
             });
@@ -149,7 +149,7 @@ class Test extends React.Component {
 
     async componentDidMount() {
         const userGroups = await db.patients.getUserGroups();
-        this.setState({ userGroups, userGroup: userGroups[0] });
+        this.setState({ userGroups, userGroupIndex: 0 });
     }
 
     render() {
@@ -186,13 +186,13 @@ class Test extends React.Component {
                                 )}
                                 <Text style={styles.groupPickerLabel}>Wybierz grupę dostępu:</Text>
                                 <Picker
-                                    selectedValue={this.state.userGroup}
+                                    selectedValue={this.state.userGroupIndex}
                                     style={styles.groupPicker}
-                                    onValueChange={(userGroup) => this.setState({ userGroup })}
+                                    onValueChange={(userGroupIndex) => this.setState({ userGroupIndex })}
                                 >
-                                    {this.state.userGroups.map((userGroup) => {
+                                    {this.state.userGroups.map((userGroup, index) => {
                                         const label = `${userGroup.subgroup} (${userGroup.group})`;
-                                        return <Picker.Item key={label} label={label} value={userGroup} />;
+                                        return <Picker.Item key={index} label={label} value={index} />;
                                     })}
                                 </Picker>
                                 {this.props.test.testId === '2' && (
@@ -235,7 +235,7 @@ class Test extends React.Component {
                         {!this.state.activeQuestion && !this.state.testCompleted && (
                             <Button
                                 mode="contained"
-                                disabled={this.props.test.testId === '3' && (!this.state.age || !this.state.educationDuration)}
+                                disabled={this.state.userGroupIndex === null || (this.props.test.testId === '3' && (!this.state.age || !this.state.educationDuration))}
                                 style={styles.button}
                                 contentStyle={styles.buttonContent}
                                 onPress={() => this.setActiveQuestion(this.props.test.questions[0])}
