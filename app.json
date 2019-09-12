@@ -20,7 +20,7 @@
     "android": {
       "package": "calculator.fragility.patient",
       "permissions": [],
-      "versionCode": 4
+      "versionCode": 5
     }
   }
 }
