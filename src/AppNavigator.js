@@ -4,6 +4,7 @@ import { Avatar, Menu } from 'react-native-paper';
 import { createAppContainer, createSwitchNavigator, createStackNavigator } from 'react-navigation';
 import firebase from 'firebase';
 import PropTypes from 'prop-types';
+import { FIREBASE_HOSTING_URL } from 'react-native-dotenv';
 
 import AuthScreen from './screens/AuthScreen';
 
@@ -33,7 +34,11 @@ class NavigationRightSide extends React.Component {
     }
 
     openPrivacyPolicy() {
-        Linking.openURL('https://kalkulator-kruchosci.flycricket.io/privacy.html');
+        Linking.openURL(`${FIREBASE_HOSTING_URL}/privacy-policy`);
+    }
+
+    openUserGuide() {
+        Linking.openURL(`${FIREBASE_HOSTING_URL}/user-guide`);
     }
 
     render() {
@@ -53,6 +58,7 @@ class NavigationRightSide extends React.Component {
                 }
             >
                 <Menu.Item onPress={this.openPrivacyPolicy} title="Polityka prywatności" />
+                <Menu.Item onPress={this.openUserGuide} title="Podręcznik użytkownika" />
                 <Menu.Item onPress={this.logout} title="Wyloguj" />
             </Menu>
         );
